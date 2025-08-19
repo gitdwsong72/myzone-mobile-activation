@@ -1,31 +1,49 @@
 {
   "name": "myzone-frontend",
   "version": "1.0.0",
+  "description": "MyZone 핸드폰 개통 서비스 프론트엔드",
   "private": true,
   "dependencies": {
-    "@reduxjs/toolkit": "^1.9.7",
+    "@reduxjs/toolkit": "^2.0.1",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.9.4",
+    "@types/react": "^18.2.38",
+    "@types/react-dom": "^18.2.17",
+    "axios": "^1.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.1.3",
-    "react-router-dom": "^6.18.0",
+    "react-redux": "^9.0.4",
+    "react-router-dom": "^6.19.0",
     "react-scripts": "5.0.1",
-    "axios": "^1.6.0",
-    "typescript": "^4.9.5",
-    "@types/node": "^16.18.59",
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
-    "web-vitals": "^2.1.4"
+    "typescript": "^5.3.2",
+    "web-vitals": "^3.5.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-security": "^1.7.1",
+    "prettier": "^3.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:ci": "react-scripts test --coverage --watchAll=false --testResultsProcessor=jest-junit",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
-    "test:ci": "react-scripts test --coverage --watchAll=false --ci",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint src --ext .ts,.tsx,.js,.jsx --fix",
+    "format": "prettier --write src/**/*.{ts,tsx,js,jsx,css,md}"
   },
   "eslintConfig": {
     "extends": [
@@ -47,11 +65,10 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
+      "src/**/*.{ts,tsx}",
       "!src/**/*.d.ts",
       "!src/index.tsx",
-      "!src/reportWebVitals.ts",
-      "!src/setupTests.ts"
+      "!src/reportWebVitals.ts"
     ],
     "coverageThreshold": {
       "global": {
@@ -61,17 +78,5 @@
         "statements": 70
       }
     }
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@testing-library/react-hooks": "^8.0.1",
-    "jest-environment-jsdom": "^29.7.0",
-    "msw": "^1.3.2",
-    "@types/jest": "^29.5.8",
-    "@playwright/test": "^1.40.0",
-    "axios-mock-adapter": "^1.22.0"
-  },
-  "proxy": "http://localhost:8000"
+  }
 }
