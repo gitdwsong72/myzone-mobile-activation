@@ -267,8 +267,21 @@ GitHub Actions를 통한 자동화된 CI/CD 파이프라인이 구성되어 있�
 5. **Docker 이미지 빌드**: 멀티스테이지 빌드
 6. **자동 배포**: 스테이징/프로덕션 환경
 
+#### GitHub Secrets 자동 설정
+```bash
+# 자동 설정 (권장)
+./scripts/manage.sh secrets setup
+
+# 수동 설정 가이드 확인
+./scripts/manage.sh secrets template
+
+# 설정 검증
+./scripts/manage.sh secrets validate
+```
+
 #### 필요한 GitHub Secrets
 ```
+# 필수 Secrets
 STAGING_SSH_KEY          # 스테이징 서버 SSH 키
 STAGING_USER             # 스테이징 서버 사용자
 STAGING_HOST             # 스테이징 서버 호스트
@@ -279,8 +292,12 @@ PRODUCTION_USER          # 프로덕션 서버 사용자
 PRODUCTION_HOST          # 프로덕션 서버 호스트
 PRODUCTION_URL           # 프로덕션 서버 URL
 
+# 선택사항 Secrets
 SLACK_WEBHOOK            # 슬랙 알림 웹훅 URL
+CODECOV_TOKEN            # 코드 커버리지 토큰
 ```
+
+자세한 설정 방법은 [GitHub Secrets 설정 가이드](docs/GITHUB_SECRETS_SETUP.md)를 참고하세요.
 
 ### 로그 관리
 

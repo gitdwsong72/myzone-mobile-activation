@@ -52,12 +52,15 @@ usage() {
     echo "  status             전체 시스템 상태"
     echo "  update             의존성 업데이트"
     echo "  clean              정리 작업"
+    echo "  secrets            GitHub Secrets 관리"
     echo ""
     echo "예시:"
     echo "  $0 setup"
     echo "  $0 deploy production"
     echo "  $0 health"
     echo "  $0 logs backend"
+    echo "  $0 secrets setup"
+    echo "  $0 secrets validate"
     echo "  $0 ssl myzone.com admin@myzone.com"
     echo ""
     exit 1
@@ -253,6 +256,54 @@ clean() {
     log_success "정리 완료"
 }
 
+# GitHub Secrets 관리
+secrets() {
+    local action="$1"
+    
+    log_header "GitHub Secrets 관리"
+    
+    case "$action" in
+        setup)
+            log_info "GitHub Secrets 자동 설정"
+            ./scripts/setup-github-secrets.sh
+            ;;
+        validate)
+            log_info "GitHub Secrets 검증"
+            ./scripts/validate-secrets.sh
+            ;;
+        list)
+            log_info "GitHub Secrets 목록"
+            if command -v gh &> /dev/null; then
+                gh secret list
+            else
+                log_error "GitHub CLI가 설치되지 않았습니다"
+                exit 1
+            fi
+            ;;
+        template)
+            log_info "Secrets 템플릿 표시"
+            if [[ -f ".github/secrets-template.env" ]]; then
+                cat .github/secrets-template.env
+            else
+                log_error "템플릿 파일을 찾을 수 없습니다"
+                exit 1
+            fi
+            ;;
+        help)
+            echo "GitHub Secrets 관리 명령어:"
+            echo "  setup      - SSH 키 생성 및 Secrets 자동 설정"
+            echo "  validate   - 설정된 Secrets 검증"
+            echo "  list       - 현재 설정된 Secrets 목록"
+            echo "  template   - Secrets 템플릿 표시"
+            echo "  help       - 이 도움말 표시"
+            ;;
+        *)
+            log_error "사용법: $0 secrets [setup|validate|list|template|help]"
+            exit 1
+            ;;
+    esac
+}
+
 # 메인 로직
 main() {
     if [[ $# -eq 0 ]]; then
@@ -295,6 +346,9 @@ main() {
             ;;
         clean)
             clean "$@"
+            ;;
+        secrets)
+            secrets "$@"
             ;;
         -h|--help|help)
             usage
