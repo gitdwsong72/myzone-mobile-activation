@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data_staging:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backups:/backups
     networks:
       - myzone_network_staging
     restart: unless-stopped
@@ -20,6 +20,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
 
   # Redis 캐시 (스테이징)
   redis:
@@ -35,6 +40,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.125'
 
   # FastAPI 백엔드 (스테이징)
   backend:
@@ -48,12 +58,14 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - ENCRYPTION_KEY=${ENCRYPTION_KEY}
-      - DEBUG=${DEBUG}
-      - ENVIRONMENT=${ENVIRONMENT}
+      - DEBUG=false
+      - ENVIRONMENT=staging
       - LOG_LEVEL=${LOG_LEVEL}
       - SMS_API_KEY=${SMS_API_KEY}
       - PAYMENT_API_KEY=${PAYMENT_API_KEY}
       - EMAIL_API_KEY=${EMAIL_API_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
     volumes:
       - backend_uploads_staging:/app/uploads
       - ./logs:/app/logs
@@ -65,6 +77,11 @@ services:
     networks:
       - myzone_network_staging
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
 
   # React 프론트엔드 (스테이징)
   frontend:
@@ -77,6 +94,11 @@ services:
     networks:
       - myzone_network_staging
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.125'
 
   # Nginx 리버스 프록시 (스테이징)
   nginx:
@@ -95,6 +117,11 @@ services:
     networks:
       - myzone_network_staging
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.125'
 
 volumes:
   postgres_data_staging:
