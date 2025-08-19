@@ -60,7 +60,7 @@ jobs:
         delete-branch: true
     
     - name: Upload security report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: python-security-report
@@ -120,7 +120,7 @@ jobs:
         delete-branch: true
     
     - name: Upload security report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: nodejs-security-report

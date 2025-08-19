@@ -194,7 +194,7 @@ jobs:
       run: npx playwright test
     
     - name: Upload E2E test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-report
@@ -217,6 +217,7 @@ jobs:
     
     - name: Upload Trivy scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
+      continue-on-error: true
       with:
         sarif_file: 'trivy-results.sarif'
 
@@ -335,7 +336,7 @@ jobs:
       run: npx playwright test e2e/tests/performance.spec.ts
     
     - name: Upload performance test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: performance-report

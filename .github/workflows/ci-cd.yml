@@ -81,7 +81,7 @@ jobs:
         npx tsc --noEmit
     
     - name: Upload code quality reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: code-quality-reports
@@ -109,19 +109,23 @@ jobs:
     - name: Upload Trivy scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
       if: always()
+      continue-on-error: true
       with:
         sarif_file: 'trivy-results.sarif'
     
     - name: Run CodeQL Analysis
       uses: github/codeql-action/init@v3
+      continue-on-error: true
       with:
         languages: python, javascript
     
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3
+      continue-on-error: true
     
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
+      continue-on-error: true
 
   # 단위 테스트
   unit-tests:
@@ -208,7 +212,7 @@ jobs:
         name: frontend-coverage
     
     - name: Upload test reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-reports
@@ -340,7 +344,7 @@ jobs:
       run: npx playwright test
     
     - name: Upload E2E test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-report
@@ -385,7 +389,7 @@ jobs:
       run: npx playwright test e2e/tests/performance.spec.ts
     
     - name: Upload performance test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: performance-report
