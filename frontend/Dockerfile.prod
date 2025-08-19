@@ -1,0 +1,46 @@
+# 멀티스테이지 빌드를 사용한 프로덕션 최적화 Dockerfile
+FROM node:18-alpine as builder
+
+WORKDIR /app
+
+# package.json과 package-lock.json 복사
+COPY package*.json ./
+
+# 의존성 설치 (개발 의존성 포함)
+RUN npm ci
+
+# 소스 코드 복사
+COPY . .
+
+# 프로덕션 빌드
+RUN npm run build
+
+# 프로덕션 스테이지 - Nginx 사용
+FROM nginx:alpine
+
+# 보안을 위한 비루트 사용자 생성
+RUN addgroup -g 1001 -S myzone && \
+    adduser -S myzone -u 1001
+
+# 빌드된 파일을 Nginx 정적 파일 디렉토리로 복사
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Nginx 설정 파일 복사
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# 로그 디렉토리 권한 설정
+RUN touch /var/log/nginx/access.log /var/log/nginx/error.log && \
+    chown myzone:myzone /var/log/nginx/access.log /var/log/nginx/error.log
+
+# Nginx 프로세스를 비루트로 실행하기 위한 설정
+RUN sed -i 's/user  nginx;/user  myzone;/' /etc/nginx/nginx.conf
+
+# 헬스체크 추가
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
+# 포트 노출
+EXPOSE 80
+
+# Nginx 실행
+CMD ["nginx", "-g", "daemon off;"]

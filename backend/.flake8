@@ -1,0 +1,25 @@
+[flake8]
+max-line-length = 127
+max-complexity = 10
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    .env,
+    migrations,
+    alembic/versions,
+    tests/fixtures
+
+ignore = 
+    E203,  # whitespace before ':'
+    E501,  # line too long (handled by black)
+    W503,  # line break before binary operator
+    F401,  # imported but unused (handled by autoflake)
+
+per-file-ignores =
+    __init__.py:F401
+    tests/*:S101,S106  # assert 사용 허용, hardcoded password 허용
+
+# 보안 관련 검사 활성화
+select = E,W,F,C,N,B,S

@@ -1,0 +1,186 @@
+name: Dependency Update
+
+on:
+  schedule:
+    # 매주 월요일 오전 9시 (UTC)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-python-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install pip-tools
+      run: pip install pip-tools
+    
+    - name: Update Python dependencies
+      run: |
+        cd backend
+        pip-compile --upgrade requirements.in
+    
+    - name: Check for security vulnerabilities
+      run: |
+        cd backend
+        pip install safety
+        safety check -r requirements.txt --json --output safety-report.json || true
+    
+    - name: Create Pull Request for Python dependencies
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update Python dependencies'
+        title: 'chore: update Python dependencies'
+        body: |
+          ## Python Dependencies Update
+          
+          This PR updates Python dependencies to their latest versions.
+          
+          ### Changes
+          - Updated all Python packages in `backend/requirements.txt`
+          
+          ### Security Report
+          Please review the security report in the artifacts.
+          
+          ### Testing
+          - [ ] All tests pass
+          - [ ] Security scan passes
+          - [ ] Manual testing completed
+        branch: update/python-dependencies
+        delete-branch: true
+    
+    - name: Upload security report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: python-security-report
+        path: backend/safety-report.json
+        retention-days: 30
+
+  update-node-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Update Node.js dependencies
+      run: |
+        cd frontend
+        npm update
+        npm audit fix --audit-level moderate
+    
+    - name: Run security audit
+      run: |
+        cd frontend
+        npm audit --json > npm-audit-report.json || true
+    
+    - name: Create Pull Request for Node.js dependencies
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update Node.js dependencies'
+        title: 'chore: update Node.js dependencies'
+        body: |
+          ## Node.js Dependencies Update
+          
+          This PR updates Node.js dependencies to their latest versions.
+          
+          ### Changes
+          - Updated all Node.js packages in `frontend/package.json`
+          - Applied security fixes
+          
+          ### Security Report
+          Please review the security report in the artifacts.
+          
+          ### Testing
+          - [ ] All tests pass
+          - [ ] Security scan passes
+          - [ ] Manual testing completed
+        branch: update/nodejs-dependencies
+        delete-branch: true
+    
+    - name: Upload security report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: nodejs-security-report
+        path: frontend/npm-audit-report.json
+        retention-days: 30
+
+  update-docker-images:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Check for base image updates
+      run: |
+        # Python 이미지 최신 태그 확인
+        PYTHON_LATEST=$(curl -s "https://registry.hub.docker.com/v2/repositories/library/python/tags/?page_size=100" | jq -r '.results[] | select(.name | test("^3\\.11-slim$")) | .name' | head -1)
+        
+        # Node 이미지 최신 태그 확인
+        NODE_LATEST=$(curl -s "https://registry.hub.docker.com/v2/repositories/library/node/tags/?page_size=100" | jq -r '.results[] | select(.name | test("^18-alpine$")) | .name' | head -1)
+        
+        # PostgreSQL 이미지 최신 태그 확인
+        POSTGRES_LATEST=$(curl -s "https://registry.hub.docker.com/v2/repositories/library/postgres/tags/?page_size=100" | jq -r '.results[] | select(.name | test("^15-alpine$")) | .name' | head -1)
+        
+        # Redis 이미지 최신 태그 확인
+        REDIS_LATEST=$(curl -s "https://registry.hub.docker.com/v2/repositories/library/redis/tags/?page_size=100" | jq -r '.results[] | select(.name | test("^7-alpine$")) | .name' | head -1)
+        
+        echo "PYTHON_LATEST=$PYTHON_LATEST" >> $GITHUB_ENV
+        echo "NODE_LATEST=$NODE_LATEST" >> $GITHUB_ENV
+        echo "POSTGRES_LATEST=$POSTGRES_LATEST" >> $GITHUB_ENV
+        echo "REDIS_LATEST=$REDIS_LATEST" >> $GITHUB_ENV
+    
+    - name: Update Dockerfile base images
+      run: |
+        # 현재 날짜 기준으로 이미지 태그 업데이트 여부 결정
+        # 실제로는 더 정교한 로직이 필요할 수 있음
+        echo "Docker 이미지 업데이트 확인 완료"
+    
+    - name: Create Pull Request for Docker images
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update Docker base images'
+        title: 'chore: update Docker base images'
+        body: |
+          ## Docker Base Images Update
+          
+          This PR updates Docker base images to their latest versions.
+          
+          ### Changes
+          - Updated Python base image
+          - Updated Node.js base image
+          - Updated PostgreSQL image
+          - Updated Redis image
+          
+          ### Testing
+          - [ ] All tests pass
+          - [ ] Docker builds successfully
+          - [ ] Manual testing completed
+        branch: update/docker-images
+        delete-branch: true

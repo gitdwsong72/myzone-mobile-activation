@@ -1,0 +1,53 @@
+# 멀티스테이지 빌드를 사용한 프로덕션 최적화 Dockerfile
+FROM python:3.11-slim as builder
+
+# 빌드 의존성 설치
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python 의존성 설치
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# 프로덕션 스테이지
+FROM python:3.11-slim
+
+# 보안을 위한 비루트 사용자 생성
+RUN groupadd -r myzone && useradd -r -g myzone myzone
+
+# 런타임 의존성만 설치
+RUN apt-get update && apt-get install -y \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# 빌더 스테이지에서 Python 패키지 복사
+COPY --from=builder /root/.local /home/myzone/.local
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 애플리케이션 코드 복사
+COPY --chown=myzone:myzone . .
+
+# PATH에 로컬 bin 추가
+ENV PATH=/home/myzone/.local/bin:$PATH
+
+# 업로드 디렉토리 생성 및 권한 설정
+RUN mkdir -p /app/uploads && chown -R myzone:myzone /app/uploads
+
+# 비루트 사용자로 전환
+USER myzone
+
+# 헬스체크 추가
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/api/v1/health')" || exit 1
+
+# 포트 노출
+EXPOSE 8000
+
+# 프로덕션용 실행 명령
+CMD ["gunicorn", "app.main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "--error-logfile", "-"]

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}주문 상태 변경 - MyZone{% endblock %}
+
+{% block content %}
+<h2>주문 상태가 변경되었습니다</h2>
+
+<p>안녕하세요 <strong>{{ user_name }}</strong>님,</p>
+
+<p>주문번호 <strong>{{ order_number }}</strong>의 상태가 변경되었습니다.</p>
+
+<div class="order-info">
+    <h3>📋 주문 상태</h3>
+    <ul>
+        <li><strong>주문번호:</strong> {{ order_number }}</li>
+        <li><strong>현재 상태:</strong> 
+            <span class="status {{ status.lower() }}">{{ status }}</span>
+        </li>
+        <li><strong>변경일시:</strong> {{ update_date or "방금 전" }}</li>
+    </ul>
+</div>
+
+{% if note %}
+<div class="order-info">
+    <h3>📝 처리 메모</h3>
+    <p>{{ note }}</p>
+</div>
+{% endif %}
+
+{% if status == "개통완료" %}
+<div class="order-info" style="background-color: #d4edda; border-left: 4px solid #28a745;">
+    <h3>🎉 개통이 완료되었습니다!</h3>
+    <p>이제 MyZone 서비스를 이용하실 수 있습니다.</p>
+    <p>서비스 이용 중 문의사항이 있으시면 언제든 고객센터로 연락주세요.</p>
+</div>
+{% elif status == "반려" %}
+<div class="order-info" style="background-color: #f8d7da; border-left: 4px solid #dc3545;">
+    <h3>⚠️ 주문이 반려되었습니다</h3>
+    <p>자세한 사유는 고객센터(1588-0000)로 문의해주세요.</p>
+    <p>필요한 서류나 정보를 보완하여 다시 신청하실 수 있습니다.</p>
+</div>
+{% elif status == "개통처리중" %}
+<div class="order-info" style="background-color: #fff3cd; border-left: 4px solid #ffc107;">
+    <h3>⏳ 개통 처리가 진행 중입니다</h3>
+    <p>곧 개통이 완료될 예정입니다. 조금만 더 기다려주세요!</p>
+</div>
+{% endif %}
+
+<p style="text-align: center;">
+    <a href="#" class="button">주문 상세 보기</a>
+</p>
+
+<p>감사합니다.<br>
+MyZone 고객센터</p>
+{% endblock %}

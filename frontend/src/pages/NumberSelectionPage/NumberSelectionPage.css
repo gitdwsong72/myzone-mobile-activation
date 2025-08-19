@@ -1,0 +1,643 @@
+/* 번호 선택 페이지 스타일 */
+.number-selection-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem 5%;
+}
+
+/* 로딩 컨테이너 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+}
+
+.loading-container p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+/* 진행률 섹션 */
+.progress-section {
+  max-width: 1200px;
+  margin: 0 auto 2rem auto;
+  text-align: center;
+}
+
+.progress-text {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* 페이지 헤더 */
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.page-description {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* 예약 상태 */
+.reservation-status {
+  max-width: 1200px;
+  margin: 0 auto 2rem auto;
+  background: linear-gradient(45deg, #28a745, #20c997);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+.reservation-info {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.reserved-number {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.number-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.reservation-label {
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+.reservation-timer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.timer-label {
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+.timer-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+
+.reservation-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* 검색 섹션 */
+.search-section {
+  max-width: 1200px;
+  margin: 0 auto 2rem auto;
+}
+
+.search-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-input-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.search-button {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  white-space: nowrap;
+}
+
+.search-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.search-tips {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tips-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.tip-item {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  background: var(--gray-100);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+}
+
+/* 카테고리 필터 */
+.category-filter {
+  max-width: 1200px;
+  margin: 0 auto 2rem auto;
+}
+
+.category-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.category-tab {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid var(--gray-200);
+  background: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.category-tab:hover {
+  border-color: var(--primary-color);
+  background: var(--gray-50);
+}
+
+.category-tab.active {
+  border-color: var(--primary-color);
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+}
+
+.category-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.category-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.category-name {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+}
+
+.category-description {
+  font-size: var(--font-size-xs);
+  opacity: 0.8;
+}
+
+/* 번호 섹션 */
+.numbers-section {
+  max-width: 1200px;
+  margin: 0 auto 3rem auto;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.numbers-count {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  background: var(--gray-100);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+
+/* 번호 그리드 */
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* 번호 카드 */
+.number-card {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.number-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.number-card.reserved-by-me {
+  border: 2px solid var(--success-color);
+  background: linear-gradient(135deg, #f8fff9, #e8f5e8);
+}
+
+.number-card.reserved {
+  opacity: 0.7;
+  background: var(--gray-50);
+}
+
+.number-card.taken {
+  opacity: 0.5;
+  background: var(--gray-100);
+}
+
+.number-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  z-index: 1;
+}
+
+.number-badge.popular {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  color: white;
+}
+
+.number-badge.reserved {
+  background: var(--warning-color);
+  color: var(--text-primary);
+}
+
+.number-badge.taken {
+  background: var(--gray-500);
+  color: white;
+}
+
+.number-display {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.number-display .number-text {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.number-pattern {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--primary-color);
+  font-weight: var(--font-weight-semibold);
+}
+
+.number-info {
+  margin-bottom: 1.5rem;
+}
+
+.number-category {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.number-category .category-icon {
+  font-size: 1.2rem;
+}
+
+.number-category .category-name {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.number-fee {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--gray-50);
+  border-radius: var(--border-radius);
+}
+
+.fee-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.fee-value {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.number-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reserve-button {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.reserve-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.reserved-button {
+  background: linear-gradient(45deg, #28a745, #20c997);
+  border: none;
+  cursor: default;
+}
+
+.unavailable-info {
+  text-align: center;
+}
+
+.unavailable-text {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.suggested-numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.suggested-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.suggested-list {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.suggested-number {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--primary-color);
+  background: white;
+  color: var(--primary-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+}
+
+.suggested-number:hover:not(:disabled) {
+  background: var(--primary-color);
+  color: white;
+}
+
+.suggested-number:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 빈 상태 */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin: 0 0 2rem 0;
+}
+
+/* 페이지 액션 */
+.page-actions {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  gap: 1rem;
+}
+
+.back-button {
+  flex: 1;
+  max-width: 200px;
+}
+
+.next-button {
+  flex: 1;
+  max-width: 200px;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.next-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .number-selection-page {
+    padding: 1rem;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .page-description {
+    font-size: 1rem;
+  }
+  
+  .reservation-status {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .reservation-info {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .search-input-group {
+    flex-direction: column;
+  }
+  
+  .search-tips {
+    justify-content: center;
+  }
+  
+  .category-tabs {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .numbers-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .number-card {
+    padding: 1rem;
+  }
+  
+  .number-display .number-text {
+    font-size: 1.5rem;
+  }
+  
+  .page-actions {
+    flex-direction: column;
+  }
+  
+  .back-button,
+  .next-button {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .number-selection-page {
+    padding: 0.5rem;
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .search-container {
+    padding: 1rem;
+  }
+  
+  .category-tab {
+    padding: 0.75rem;
+  }
+  
+  .category-icon {
+    font-size: 1.2rem;
+  }
+  
+  .category-name {
+    font-size: var(--font-size-sm);
+  }
+  
+  .category-description {
+    font-size: 0.7rem;
+  }
+  
+  .number-display .number-text {
+    font-size: 1.3rem;
+  }
+  
+  .suggested-list {
+    gap: 0.25rem;
+  }
+  
+  .suggested-number {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  
+  .reservation-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+}

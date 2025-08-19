@@ -1,0 +1,135 @@
+# Prometheus 알림 규칙
+groups:
+  - name: myzone.rules
+    rules:
+      # 시스템 리소스 알림
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "높은 CPU 사용률 감지"
+          description: "{{ $labels.instance }}에서 CPU 사용률이 {{ $value }}%입니다."
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "높은 메모리 사용률 감지"
+          description: "{{ $labels.instance }}에서 메모리 사용률이 {{ $value }}%입니다."
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 15
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "디스크 공간 부족"
+          description: "{{ $labels.instance }}의 루트 파티션 여유 공간이 {{ $value }}%입니다."
+
+      # 애플리케이션 알림
+      - alert: BackendDown
+        expr: up{job="myzone-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "백엔드 서비스 다운"
+          description: "MyZone 백엔드 서비스가 응답하지 않습니다."
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "높은 응답 시간"
+          description: "95% 응답 시간이 {{ $value }}초입니다."
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "높은 오류율"
+          description: "HTTP 5xx 오류율이 {{ $value }}%입니다."
+
+      # 데이터베이스 알림
+      - alert: PostgreSQLDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL 데이터베이스 다운"
+          description: "PostgreSQL 데이터베이스가 응답하지 않습니다."
+
+      - alert: PostgreSQLTooManyConnections
+        expr: pg_stat_database_numbackends / pg_settings_max_connections * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL 연결 수 과다"
+          description: "PostgreSQL 연결 수가 {{ $value }}%입니다."
+
+      # Redis 알림
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis 서비스 다운"
+          description: "Redis 서비스가 응답하지 않습니다."
+
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis 메모리 사용률 높음"
+          description: "Redis 메모리 사용률이 {{ $value }}%입니다."
+
+      # 컨테이너 알림
+      - alert: ContainerKilled
+        expr: time() - container_last_seen > 60
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "컨테이너 종료됨"
+          description: "컨테이너 {{ $labels.name }}이 종료되었습니다."
+
+      - alert: ContainerCpuUsage
+        expr: (sum(rate(container_cpu_usage_seconds_total[3m])) BY (instance, name) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "컨테이너 CPU 사용률 높음"
+          description: "컨테이너 {{ $labels.name }}의 CPU 사용률이 {{ $value }}%입니다."
+
+      # 외부 서비스 알림
+      - alert: WebsiteDown
+        expr: probe_success == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "웹사이트 다운"
+          description: "{{ $labels.instance }}에 접근할 수 없습니다."
+
+      - alert: SSLCertExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 30
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SSL 인증서 만료 임박"
+          description: "{{ $labels.instance }}의 SSL 인증서가 30일 내에 만료됩니다."

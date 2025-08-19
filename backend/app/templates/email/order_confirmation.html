@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}주문 확인 - MyZone{% endblock %}
+
+{% block content %}
+<h2>주문이 접수되었습니다!</h2>
+
+<p>안녕하세요 <strong>{{ user_name }}</strong>님,</p>
+
+<p>MyZone 개통 신청이 성공적으로 접수되었습니다. 아래 주문 내역을 확인해주세요.</p>
+
+<div class="order-info">
+    <h3>📋 주문 정보</h3>
+    <ul>
+        <li><strong>주문번호:</strong> {{ order_number }}</li>
+        <li><strong>주문일시:</strong> {{ order_date or "방금 전" }}</li>
+        <li><strong>상태:</strong> <span class="status confirmed">접수 완료</span></li>
+    </ul>
+</div>
+
+<div class="order-info">
+    <h3>📱 선택 상품</h3>
+    <ul>
+        <li><strong>요금제:</strong> {{ plan_name }}</li>
+        {% if device_name %}
+        <li><strong>단말기:</strong> {{ device_name }}</li>
+        {% endif %}
+        {% if phone_number %}
+        <li><strong>전화번호:</strong> {{ phone_number }}</li>
+        {% endif %}
+        <li><strong>총 금액:</strong> <span style="color: #007bff; font-size: 18px; font-weight: bold;">{{ total_amount }}원</span></li>
+    </ul>
+</div>
+
+<div class="order-info">
+    <h3>📅 다음 단계</h3>
+    <p>1. 심사 진행 (1-2일 소요)</p>
+    <p>2. 개통 처리 (심사 완료 후 1일 소요)</p>
+    <p>3. 서비스 이용 시작</p>
+</div>
+
+<p style="text-align: center;">
+    <a href="#" class="button">주문 상태 확인하기</a>
+</p>
+
+<p><strong>주문번호를 꼭 기억해주세요!</strong> 주문 상태 조회 시 필요합니다.</p>
+
+<p>진행 상황은 SMS와 이메일로 안내드리겠습니다.</p>
+
+<p>감사합니다.<br>
+MyZone 고객센터</p>
+{% endblock %}

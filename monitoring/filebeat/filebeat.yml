@@ -1,0 +1,61 @@
+# Filebeat 설정 파일
+filebeat.inputs:
+  # 애플리케이션 로그
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/myzone/backend/*.log
+      - /var/log/myzone/nginx/*.log
+    fields:
+      service: myzone
+      environment: production
+    fields_under_root: true
+    multiline.pattern: '^\d{4}-\d{2}-\d{2}'
+    multiline.negate: true
+    multiline.match: after
+
+  # Docker 컨테이너 로그
+  - type: container
+    enabled: true
+    paths:
+      - '/var/lib/docker/containers/*/*.log'
+    processors:
+      - add_docker_metadata:
+          host: "unix:///var/run/docker.sock"
+
+  # 시스템 로그
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/syslog
+      - /var/log/auth.log
+    fields:
+      service: system
+      environment: production
+    fields_under_root: true
+
+# 프로세서 설정
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+
+# 출력 설정
+output.logstash:
+  hosts: ["logstash:5044"]
+
+# 로깅 설정
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+
+# 모니터링 설정
+monitoring.enabled: true
+monitoring.elasticsearch:
+  hosts: ["elasticsearch:9200"]
