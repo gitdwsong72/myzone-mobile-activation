@@ -9,7 +9,7 @@ from dataclasses import dataclass, asdict
 from collections import defaultdict, deque
 import logging
 
-from app.core.redis_client import get_redis_client
+from app.core.redis_client import redis_client
 from app.core.logging_config import get_logger
 
 logger = get_logger('error_tracking')
@@ -49,7 +49,7 @@ class ErrorTracker:
     """오류 추적기"""
     
     def __init__(self):
-        self.redis_client = get_redis_client()
+        self.redis_client = redis_client
         self.error_cache = deque(maxlen=1000)  # 최근 1000개 오류 캐시
         self.error_counts = defaultdict(int)
         self.error_summaries = {}

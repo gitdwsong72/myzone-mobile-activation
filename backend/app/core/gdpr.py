@@ -307,6 +307,9 @@ class GDPRService:
             f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
 
 
-def get_gdpr_service(db: Session) -> GDPRService:
+from ..core.deps import get_db
+from fastapi import Depends
+
+def get_gdpr_service(db: Session = Depends(get_db)) -> GDPRService:
     """GDPR 서비스 의존성 주입"""
     return GDPRService(db)

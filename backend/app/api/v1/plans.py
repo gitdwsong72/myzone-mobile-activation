@@ -5,7 +5,7 @@ from decimal import Decimal
 import math
 
 from ...core.database import get_db
-from ...core.deps import get_current_admin_user
+from ...core.deps import get_current_admin
 from ...services.plan_service import PlanService
 from ...schemas.plan import (
     PlanResponse, 
@@ -107,7 +107,7 @@ async def get_plan(
 async def create_plan(
     plan_data: PlanCreate,
     plan_service: PlanService = Depends(get_plan_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     요금제 생성 (관리자 전용)
@@ -120,7 +120,7 @@ async def update_plan(
     plan_id: int,
     plan_data: PlanUpdate,
     plan_service: PlanService = Depends(get_plan_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     요금제 수정 (관리자 전용)
@@ -132,7 +132,7 @@ async def update_plan(
 async def delete_plan(
     plan_id: int,
     plan_service: PlanService = Depends(get_plan_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     요금제 삭제 (관리자 전용) - 소프트 삭제
@@ -151,7 +151,7 @@ async def get_all_plans_for_admin(
     page: int = Query(1, ge=1, description="페이지 번호"),
     size: int = Query(20, ge=1, le=100, description="페이지 크기"),
     plan_service: PlanService = Depends(get_plan_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     모든 요금제 조회 (관리자 전용) - 비활성화된 요금제 포함

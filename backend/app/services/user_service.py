@@ -18,7 +18,7 @@ from ..schemas.user import (
 )
 from ..core.encryption import encryption_service, encrypt_personal_data, decrypt_personal_data
 from ..core.security import get_password_hash, verify_password
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Depends
 
 logger = logging.getLogger(__name__)
 
@@ -350,6 +350,8 @@ class UserService:
             return encryption_service.mask_sensitive_data(address, visible_chars=10)
 
 
-def get_user_service(db: Session) -> UserService:
+from ..core.deps import get_db
+
+def get_user_service(db: Session = Depends(get_db)) -> UserService:
     """사용자 서비스 의존성 주입"""
     return UserService(db)

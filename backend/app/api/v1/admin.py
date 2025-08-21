@@ -917,10 +917,11 @@ async def deactivate_admin(
 
 @router.get("/permissions", response_model=AdminPermissionResponse)
 async def get_current_admin_permissions(
-    current_admin: Admin = Depends(require_admin_permissions(Permission.READ_USER))
+    current_admin: Admin = Depends(require_admin_permissions(Permission.READ_USER)),
+    db: Session = Depends(get_db)
 ):
     """현재 관리자의 권한 조회"""
-    admin_service = AdminService(SessionLocal())
+    admin_service = AdminService(db)
     permissions = admin_service.get_admin_permissions(current_admin)
     
     return AdminPermissionResponse(
@@ -987,10 +988,11 @@ async def change_admin_password(
 
 @router.get("/session", response_model=Dict[str, Any])
 async def get_admin_session_info(
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
 ):
     """현재 관리자 세션 정보 조회"""
-    admin_service = AdminService(SessionLocal())
+    admin_service = AdminService(db)
     permissions = admin_service.get_admin_permissions(current_admin)
     
     return {

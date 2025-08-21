@@ -86,3 +86,14 @@ def get_optional_current_user(
     token = credentials.credentials
     user_id = verify_token(token, "access")
     return int(user_id) if user_id else None
+
+def get_optional_current_admin(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
+) -> Optional[int]:
+    """선택적 관리자 인증 (토큰이 없어도 허용)"""
+    if not credentials:
+        return None
+    
+    token = credentials.credentials
+    admin_id = verify_token(token, "access")
+    return int(admin_id) if admin_id else None

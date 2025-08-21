@@ -5,7 +5,7 @@ from decimal import Decimal
 import math
 
 from ...core.database import get_db
-from ...core.deps import get_current_admin_user
+from ...core.deps import get_current_admin
 from ...services.device_service import DeviceService
 from ...schemas.device import (
     DeviceResponse, 
@@ -142,7 +142,7 @@ async def check_device_stock(
 async def create_device(
     device_data: DeviceCreate,
     device_service: DeviceService = Depends(get_device_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     단말기 생성 (관리자 전용)
@@ -155,7 +155,7 @@ async def update_device(
     device_id: int,
     device_data: DeviceUpdate,
     device_service: DeviceService = Depends(get_device_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     단말기 수정 (관리자 전용)
@@ -167,7 +167,7 @@ async def update_device(
 async def delete_device(
     device_id: int,
     device_service: DeviceService = Depends(get_device_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     단말기 삭제 (관리자 전용) - 소프트 삭제
@@ -181,7 +181,7 @@ async def update_device_stock(
     device_id: int,
     stock_data: DeviceStockUpdate,
     device_service: DeviceService = Depends(get_device_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     단말기 재고 수량 업데이트 (관리자 전용)
@@ -195,7 +195,7 @@ async def upload_device_image(
     file: UploadFile = File(...),
     is_main: bool = Query(False, description="대표 이미지 여부"),
     device_service: DeviceService = Depends(get_device_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     단말기 이미지 업로드 (관리자 전용)
@@ -216,7 +216,7 @@ async def remove_device_image(
     device_id: int,
     image_url: str = Query(..., description="삭제할 이미지 URL"),
     device_service: DeviceService = Depends(get_device_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     단말기 이미지 삭제 (관리자 전용)
@@ -237,7 +237,7 @@ async def get_all_devices_for_admin(
     page: int = Query(1, ge=1, description="페이지 번호"),
     size: int = Query(20, ge=1, le=100, description="페이지 크기"),
     device_service: DeviceService = Depends(get_device_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     모든 단말기 조회 (관리자 전용) - 비활성화된 단말기 포함

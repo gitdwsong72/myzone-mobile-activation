@@ -12,7 +12,7 @@ import logging
 
 from sqlalchemy import text
 from app.core.database import get_db
-from app.core.redis_client import get_redis_client
+from app.core.redis_client import redis_client
 from app.core.config import settings
 from app.core.logging_config import get_logger
 
@@ -226,7 +226,7 @@ class HealthChecker:
     async def _check_redis(self) -> HealthCheckResult:
         """Redis 헬스체크"""
         try:
-            redis_client = get_redis_client()
+            redis_client = redis_client
             start_time = time.time()
             
             # PING 명령 실행
@@ -483,7 +483,7 @@ class FailureRecovery:
         """Redis 복구"""
         try:
             # Redis 연결 재시작
-            redis_client = get_redis_client()
+            redis_client = redis_client
             redis_client.connection_pool.disconnect()
             
             # 연결 테스트

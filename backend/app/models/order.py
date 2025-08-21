@@ -2,6 +2,15 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Numeric, Text, Boole
 from sqlalchemy.orm import relationship
 from .base import BaseModel
 import uuid
+import enum
+
+
+class OrderStatus(str, enum.Enum):
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
 
 
 class Order(BaseModel):
@@ -18,8 +27,8 @@ class Order(BaseModel):
     number_id = Column(Integer, ForeignKey("numbers.id"), nullable=True, comment="번호 ID")
     
     # 주문 상태
-    status = Column(String(50), default="pending", nullable=False, index=True, 
-                   comment="주문 상태 (pending, confirmed, processing, completed, cancelled)")
+    status = Column(String(50), default=OrderStatus.PENDING, nullable=False, index=True, 
+                   comment="주문 상태")
     
     # 금액 정보
     total_amount = Column(Numeric(12, 2), nullable=False, comment="총 주문 금액")

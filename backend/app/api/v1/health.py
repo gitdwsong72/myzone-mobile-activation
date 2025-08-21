@@ -8,7 +8,7 @@ from datetime import datetime
 from app.core.health_check import health_checker, health_monitor, HealthStatus
 from app.core.monitoring import metrics_collector
 from app.core.error_tracking import error_tracker, error_reporter
-from app.core.deps import get_current_admin_user
+from app.core.deps import get_current_admin
 from app.schemas.admin import AdminResponse
 
 router = APIRouter()
@@ -34,7 +34,7 @@ async def basic_health_check():
 
 @router.get("/detailed", response_model=Dict[str, Any])
 async def detailed_health_check(
-    current_admin: AdminResponse = Depends(get_current_admin_user)
+    current_admin: AdminResponse = Depends(get_current_admin)
 ):
     """상세 헬스체크 - 관리자 권한 필요"""
     try:
@@ -73,7 +73,7 @@ async def detailed_health_check(
 @router.get("/metrics", response_model=Dict[str, Any])
 async def get_system_metrics(
     hours: int = 1,
-    current_admin: AdminResponse = Depends(get_current_admin_user)
+    current_admin: AdminResponse = Depends(get_current_admin)
 ):
     """시스템 메트릭 조회"""
     try:
@@ -103,7 +103,7 @@ async def get_system_metrics(
 @router.get("/errors", response_model=Dict[str, Any])
 async def get_error_report(
     hours: int = 24,
-    current_admin: AdminResponse = Depends(get_current_admin_user)
+    current_admin: AdminResponse = Depends(get_current_admin)
 ):
     """오류 리포트 조회"""
     try:
@@ -119,7 +119,7 @@ async def get_error_report(
 @router.get("/errors/{error_id}", response_model=Dict[str, Any])
 async def get_error_details(
     error_id: str,
-    current_admin: AdminResponse = Depends(get_current_admin_user)
+    current_admin: AdminResponse = Depends(get_current_admin)
 ):
     """특정 오류 상세 정보 조회"""
     try:
@@ -173,7 +173,7 @@ async def get_error_details(
 @router.post("/recovery/{service}", response_model=Dict[str, Any])
 async def trigger_recovery(
     service: str,
-    current_admin: AdminResponse = Depends(get_current_admin_user)
+    current_admin: AdminResponse = Depends(get_current_admin)
 ):
     """수동 복구 트리거"""
     try:
@@ -195,7 +195,7 @@ async def trigger_recovery(
 
 @router.get("/monitoring/status", response_model=Dict[str, Any])
 async def get_monitoring_status(
-    current_admin: AdminResponse = Depends(get_current_admin_user)
+    current_admin: AdminResponse = Depends(get_current_admin)
 ):
     """모니터링 시스템 상태 조회"""
     try:

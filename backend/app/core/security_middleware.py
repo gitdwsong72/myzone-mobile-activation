@@ -11,7 +11,7 @@ from collections import defaultdict, deque
 from fastapi import Request, HTTPException, status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response, JSONResponse
-from app.core.redis_client import get_redis_client
+from app.core.redis_client import redis_client
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class AdvancedRateLimitMiddleware(BaseHTTPMiddleware):
         self.burst_calls = burst_calls
         self.burst_period = burst_period
         self.endpoint_limits = endpoint_limits or {}
-        self.redis_client = get_redis_client()
+        self.redis_client = redis_client
     
     async def dispatch(self, request: Request, call_next):
         client_ip = self._get_client_ip(request)
@@ -160,7 +160,7 @@ class DDoSProtectionMiddleware(BaseHTTPMiddleware):
         self.suspicious_threshold = suspicious_threshold
         self.block_duration = block_duration
         self.whitelist_ips = whitelist_ips or set()
-        self.redis_client = get_redis_client()
+        self.redis_client = redis_client
         
         # 의심스러운 패턴들
         self.suspicious_patterns = [

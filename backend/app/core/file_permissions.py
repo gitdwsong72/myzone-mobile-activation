@@ -7,7 +7,7 @@ from fastapi import HTTPException, Request, Depends
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.deps import get_current_user_optional, get_current_admin_optional
+from app.core.deps import get_optional_current_user, get_optional_current_admin
 from app.services.file_security_service import file_security_service
 from app.models.user import User
 from app.models.admin import Admin
@@ -86,8 +86,8 @@ class FilePermissionManager:
         file_path: str,
         action: str = 'read',
         db: Session = Depends(get_db),
-        user: Optional[User] = Depends(get_current_user_optional),
-        admin: Optional[Admin] = Depends(get_current_admin_optional)
+        user: Optional[User] = Depends(get_optional_current_user),
+        admin: Optional[Admin] = Depends(get_optional_current_admin)
     ):
         """파일 접근 권한 검증 (의존성 주입용)"""
         
@@ -147,8 +147,8 @@ async def require_file_read_permission(
     request: Request,
     file_path: str,
     db: Session = Depends(get_db),
-    user: Optional[User] = Depends(get_current_user_optional),
-    admin: Optional[Admin] = Depends(get_current_admin_optional)
+    user: Optional[User] = Depends(get_optional_current_user),
+    admin: Optional[Admin] = Depends(get_optional_current_admin)
 ):
     """파일 읽기 권한 필요"""
     return await file_permission_manager.validate_file_access(
@@ -160,8 +160,8 @@ async def require_file_write_permission(
     request: Request,
     file_path: str,
     db: Session = Depends(get_db),
-    user: Optional[User] = Depends(get_current_user_optional),
-    admin: Optional[Admin] = Depends(get_current_admin_optional)
+    user: Optional[User] = Depends(get_optional_current_user),
+    admin: Optional[Admin] = Depends(get_optional_current_admin)
 ):
     """파일 쓰기 권한 필요"""
     return await file_permission_manager.validate_file_access(
@@ -173,8 +173,8 @@ async def require_file_delete_permission(
     request: Request,
     file_path: str,
     db: Session = Depends(get_db),
-    user: Optional[User] = Depends(get_current_user_optional),
-    admin: Optional[Admin] = Depends(get_current_admin_optional)
+    user: Optional[User] = Depends(get_optional_current_user),
+    admin: Optional[Admin] = Depends(get_optional_current_admin)
 ):
     """파일 삭제 권한 필요"""
     return await file_permission_manager.validate_file_access(

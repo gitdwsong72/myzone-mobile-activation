@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 
 from ...core.database import get_db
-from ...core.deps import get_current_admin_user
+from ...core.deps import get_current_admin
 from ...services.support_service import SupportService
 from ...schemas.support import (
     FAQResponse, FAQListResponse, FAQCreate, FAQUpdate,
@@ -48,7 +48,7 @@ async def get_faq(
 async def create_faq(
     faq_data: FAQCreate,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """FAQ 생성 (관리자 전용)"""
     return support_service.create_faq(faq_data)
@@ -59,7 +59,7 @@ async def update_faq(
     faq_id: int,
     faq_data: FAQUpdate,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """FAQ 수정 (관리자 전용)"""
     return support_service.update_faq(faq_id, faq_data)
@@ -69,7 +69,7 @@ async def update_faq(
 async def delete_faq(
     faq_id: int,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """FAQ 삭제 (관리자 전용)"""
     support_service.delete_faq(faq_id)
@@ -98,7 +98,7 @@ async def get_inquiries(
     page: int = Query(1, ge=1, description="페이지 번호"),
     size: int = Query(20, ge=1, le=100, description="페이지 크기"),
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """문의 목록 조회 (관리자 전용)"""
     return support_service.get_inquiries(
@@ -114,7 +114,7 @@ async def get_inquiries(
 async def get_inquiry(
     inquiry_id: int,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """문의 상세 조회 (관리자 전용)"""
     return support_service.get_inquiry_by_id(inquiry_id)
@@ -125,7 +125,7 @@ async def update_inquiry(
     inquiry_id: int,
     inquiry_data: InquiryUpdate,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """문의 답변 (관리자 전용)"""
     return support_service.update_inquiry(inquiry_id, inquiry_data)

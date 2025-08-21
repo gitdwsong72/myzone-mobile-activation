@@ -5,7 +5,7 @@ from decimal import Decimal
 import math
 
 from ...core.database import get_db
-from ...core.deps import get_current_admin_user
+from ...core.deps import get_current_admin
 from ...services.number_service import NumberService
 from ...schemas.number import (
     NumberResponse, 
@@ -179,7 +179,7 @@ async def analyze_number_pattern(
 async def create_number(
     number_data: NumberCreate,
     number_service: NumberService = Depends(get_number_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     전화번호 생성 (관리자 전용)
@@ -192,7 +192,7 @@ async def update_number(
     number_id: int,
     number_data: NumberUpdate,
     number_service: NumberService = Depends(get_number_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     전화번호 수정 (관리자 전용)
@@ -204,7 +204,7 @@ async def update_number(
 async def delete_number(
     number_id: int,
     number_service: NumberService = Depends(get_number_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     전화번호 삭제 (관리자 전용)
@@ -217,7 +217,7 @@ async def delete_number(
 async def assign_number(
     number_id: int,
     number_service: NumberService = Depends(get_number_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     전화번호 할당 (관리자 전용) - 개통 완료 처리
@@ -238,7 +238,7 @@ async def get_all_numbers_for_admin(
     page: int = Query(1, ge=1, description="페이지 번호"),
     size: int = Query(20, ge=1, le=100, description="페이지 크기"),
     number_service: NumberService = Depends(get_number_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     모든 전화번호 조회 (관리자 전용) - 모든 상태 포함

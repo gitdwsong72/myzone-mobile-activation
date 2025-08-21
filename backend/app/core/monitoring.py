@@ -12,7 +12,7 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 import logging
 
-from app.core.redis_client import get_redis_client
+from app.core.redis_client import redis_client
 from app.core.logging_config import get_logger
 
 logger = get_logger('monitoring')
@@ -51,7 +51,7 @@ class MetricsCollector:
     """메트릭 수집기"""
     
     def __init__(self):
-        self.redis_client = get_redis_client()
+        self.redis_client = redis_client
         self.request_metrics = deque(maxlen=10000)  # 최근 10,000개 요청 보관
         self.system_metrics = deque(maxlen=1440)    # 24시간 (분당 1개)
         self.error_counts = defaultdict(int)

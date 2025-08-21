@@ -167,7 +167,7 @@ class OrderService:
             )
         return order
     
-    def create_order(self, order_data: OrderCreate) -> Order:
+    async def create_order(self, order_data: OrderCreate) -> Order:
         """주문 생성"""
         # 관련 데이터 검증
         user = self.db.query(User).filter(User.id == order_data.user_id).first()
@@ -303,7 +303,7 @@ class OrderService:
         self.db.refresh(order)
         return order
     
-    def update_order_status(self, order_id: int, status_update: OrderStatusUpdate, admin_id: Optional[int] = None) -> Order:
+    async def update_order_status(self, order_id: int, status_update: OrderStatusUpdate, admin_id: Optional[int] = None) -> Order:
         """주문 상태 변경"""
         order = self.get_order_by_id(order_id, include_relations=False)
         
@@ -361,7 +361,7 @@ class OrderService:
         
         return order
     
-    def cancel_order(self, order_id: int, reason: Optional[str] = None, admin_id: Optional[int] = None) -> Order:
+    async def cancel_order(self, order_id: int, reason: Optional[str] = None, admin_id: Optional[int] = None) -> Order:
         """주문 취소"""
         order = self.get_order_by_id(order_id, include_relations=False)
         
@@ -376,7 +376,7 @@ class OrderService:
             note=reason or "주문이 취소되었습니다."
         )
         
-        return self.update_order_status(order_id, status_update, admin_id)
+        return await self.update_order_status(order_id, status_update, admin_id)
     
     def get_user_orders(self, user_id: int, page: int = 1, size: int = 20) -> tuple[List[Order], int]:
         """사용자별 주문 목록 조회"""

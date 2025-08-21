@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "MyZone Mobile Activation Service"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
+    ENVIRONMENT: str = "development"
     
     # 서버 설정
     HOST: str = "0.0.0.0"

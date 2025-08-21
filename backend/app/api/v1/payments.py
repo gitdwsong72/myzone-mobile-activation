@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from decimal import Decimal
 
 from ...core.database import get_db
-from ...core.deps import get_current_user, get_current_admin_user
+from ...core.deps import get_current_user, get_current_admin
 from ...services.payment_service import PaymentService
 from ...services.order_service import OrderService
 from ...schemas.payment import PaymentResponse, PaymentCreate, PaymentUpdate
@@ -210,7 +210,7 @@ async def refund_payment(
     refund_amount: Decimal = Body(..., description="환불 금액"),
     reason: str = Body(..., description="환불 사유"),
     payment_service: PaymentService = Depends(get_payment_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     결제 환불 (관리자 전용)
@@ -235,7 +235,7 @@ async def get_payment_statistics(
     date_from: Optional[datetime] = Query(None, description="시작 날짜"),
     date_to: Optional[datetime] = Query(None, description="종료 날짜"),
     payment_service: PaymentService = Depends(get_payment_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     결제 통계 조회 (관리자 전용)

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import math
 
 from ...core.database import get_db
-from ...core.deps import get_current_user, get_current_admin_user
+from ...core.deps import get_current_user, get_current_admin
 from ...services.order_service import OrderService
 from ...schemas.order import (
     OrderResponse, 
@@ -85,7 +85,7 @@ async def create_order(
     """
     # 사용자 ID를 현재 로그인한 사용자로 설정
     order_data.user_id = current_user.id
-    return order_service.create_order(order_data)
+    return await order_service.create_order(order_data)
 
 
 @router.get("/{order_id}", response_model=OrderResponse)
@@ -175,7 +175,7 @@ async def cancel_order(
             detail="접근 권한이 없습니다."
         )
     
-    order_service.cancel_order(order_id, reason)
+    await order_service.cancel_order(order_id, reason, admin_id=None)
     return {"message": "주문이 취소되었습니다."}
 
 
@@ -220,7 +220,7 @@ async def get_all_orders_for_admin(
     page: int = Query(1, ge=1, description="페이지 번호"),
     size: int = Query(20, ge=1, le=100, description="페이지 크기"),
     order_service: OrderService = Depends(get_order_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     모든 주문 조회 (관리자 전용)
@@ -253,18 +253,18 @@ async def update_order_status_admin(
     order_id: int,
     status_update: OrderStatusUpdate,
     order_service: OrderService = Depends(get_order_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     주문 상태 변경 (관리자 전용)
     """
-    return order_service.update_order_status(order_id, status_update, current_admin.id)
+    return await order_service.update_order_status(order_id, status_update, current_admin.id)
 
 
 @router.get("/admin/dashboard", response_model=OrderDashboard)
 async def get_order_dashboard(
     order_service: OrderService = Depends(get_order_service),
-    current_admin: Admin = Depends(get_current_admin_user)
+    current_admin: Admin = Depends(get_current_admin)
 ):
     """
     주문 대시보드 통계 (관리자 전용)
