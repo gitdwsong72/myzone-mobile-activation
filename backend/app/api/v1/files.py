@@ -266,8 +266,8 @@ async def delete_quarantine_file(
 
 @router.post("/quarantine/cleanup")
 async def cleanup_quarantine_files(
-    days_old: int = 30,
     background_tasks: BackgroundTasks,
+    days_old: int = 30,
     current_admin: Admin = Depends(get_current_admin)
 ) -> Dict[str, str]:
     """오래된 격리 파일 정리 (관리자 전용)"""

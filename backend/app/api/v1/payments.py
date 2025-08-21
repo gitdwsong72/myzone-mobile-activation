@@ -230,7 +230,7 @@ async def refund_payment(
     }
 
 
-@router.get("/admin/statistics")
+@router.get("/admin/statistics", response_model=Dict[str, Any])
 async def get_payment_statistics(
     date_from: Optional[datetime] = Query(None, description="시작 날짜"),
     date_to: Optional[datetime] = Query(None, description="종료 날짜"),
