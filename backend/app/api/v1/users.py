@@ -117,7 +117,7 @@ async def get_my_order_detail(
         }
     }
 
-@router.post("/", response_model=Dict[str, Any])
+@router.post("/", response_model=None)
 async def create_user(
     user_data: UserCreate,
     user_service: UserService = Depends(get_user_service),
