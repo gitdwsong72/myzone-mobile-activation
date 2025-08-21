@@ -59,6 +59,7 @@ jobs:
         TESTING: 1
       run: |
         cd backend
+        export PYTHONPATH=$(pwd)
         python -m pytest tests/test_services/ tests/test_models/ -v --cov=app --cov-report=xml
     
     - name: Run backend API tests
@@ -68,6 +69,7 @@ jobs:
         TESTING: 1
       run: |
         cd backend
+        export PYTHONPATH=$(pwd)
         python -m pytest tests/test_api/ -v --cov=app --cov-report=xml --cov-append
     
     - name: Run backend integration tests
@@ -77,6 +79,7 @@ jobs:
         TESTING: 1
       run: |
         cd backend
+        export PYTHONPATH=$(pwd)
         python -m pytest tests/test_integration/ -v --cov=app --cov-report=xml --cov-append
     
     - name: Upload backend coverage to Codecov
