@@ -44,33 +44,7 @@ async def get_my_profile(
         }
     }
 
-@router.put("/me", response_model=Dict[str, Any])
-async def update_my_profile(
-    update_data: dict,
-    current_user: User = Depends(require_user_permissions(Permission.WRITE_USER)),
-    db: Session = Depends(get_db)
-):
-    """내 프로필 수정"""
-    # 수정 가능한 필드만 업데이트
-    allowed_fields = ["name", "email", "address"]
-    
-    for field, value in update_data.items():
-        if field in allowed_fields and hasattr(current_user, field):
-            setattr(current_user, field, value)
-    
-    db.commit()
-    db.refresh(current_user)
-    
-    return {
-        "success": True,
-        "message": "프로필이 업데이트되었습니다.",
-        "data": {
-            "id": current_user.id,
-            "name": current_user.name,
-            "email": current_user.email,
-            "address": current_user.address
-        }
-    }
+
 
 @router.get("/me/orders", response_model=Dict[str, Any])
 async def get_my_orders(
