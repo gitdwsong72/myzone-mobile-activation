@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -131,7 +131,7 @@ async def update_inquiry(
     return support_service.update_inquiry(inquiry_id, inquiry_data)
 
 
-@router.get("/categories")
+@router.get("/categories", response_model=Dict[str, Any])
 async def get_inquiry_categories(
     support_service: SupportService = Depends(get_support_service)
 ):
