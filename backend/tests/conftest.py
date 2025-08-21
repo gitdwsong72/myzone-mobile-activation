@@ -1,24 +1,26 @@
 """
 테스트 설정 및 픽스처 정의
 """
-import pytest
+
 import asyncio
-from typing import Generator, AsyncGenerator
+from typing import AsyncGenerator, Generator
+
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.main import app
-from app.core.database import get_db, Base
 from app.core.config import settings
-from app.models.user import User
-from app.models.plan import Plan
+from app.core.database import Base, get_db
+from app.main import app
+from app.models.admin import Admin
 from app.models.device import Device
 from app.models.number import Number
 from app.models.order import Order
 from app.models.payment import Payment
-from app.models.admin import Admin
+from app.models.plan import Plan
+from app.models.user import User
 
 # 테스트용 인메모리 SQLite 데이터베이스
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -54,12 +56,13 @@ def db_session():
 @pytest.fixture(scope="function")
 def client(db_session):
     """테스트 클라이언트"""
+
     def override_get_db():
         try:
             yield db_session
         finally:
             pass
-    
+
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as test_client:
         yield test_client
@@ -75,7 +78,7 @@ def sample_user_data():
         "email": "hong@example.com",
         "birth_date": "1990-01-01",
         "gender": "M",
-        "address": "서울시 강남구 테헤란로 123"
+        "address": "서울시 강남구 테헤란로 123",
     }
 
 
@@ -90,7 +93,7 @@ def sample_plan_data():
         "call_minutes": -1,  # 무제한
         "sms_count": -1,  # 무제한
         "category": "5G",
-        "is_active": True
+        "is_active": True,
     }
 
 
@@ -105,30 +108,20 @@ def sample_device_data():
         "stock_quantity": 10,
         "specifications": "6.2인치, 256GB, 12GB RAM",
         "image_url": "/images/galaxy-s24-black.jpg",
-        "is_active": True
+        "is_active": True,
     }
 
 
 @pytest.fixture
 def sample_number_data():
     """샘플 번호 데이터"""
-    return {
-        "number": "010-1111-2222",
-        "category": "일반",
-        "additional_fee": 0,
-        "status": "available"
-    }
+    return {"number": "010-1111-2222", "category": "일반", "additional_fee": 0, "status": "available"}
 
 
 @pytest.fixture
 def sample_admin_data():
     """샘플 관리자 데이터"""
-    return {
-        "username": "admin",
-        "email": "admin@myzone.com",
-        "password": "admin123!",
-        "role": "admin"
-    }
+    return {"username": "admin", "email": "admin@myzone.com", "password": "admin123!", "role": "admin"}
 
 
 @pytest.fixture
@@ -175,6 +168,7 @@ def created_number(db_session, sample_number_data):
 def created_admin(db_session, sample_admin_data):
     """생성된 관리자 픽스처"""
     from app.core.security import get_password_hash
+
     admin_data = sample_admin_data.copy()
     admin_data["password_hash"] = get_password_hash(admin_data.pop("password"))
     admin = Admin(**admin_data)

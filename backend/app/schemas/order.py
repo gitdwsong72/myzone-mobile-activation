@@ -1,17 +1,19 @@
-from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
-from .user import UserResponse
-from .plan import PlanResponse
 from .device import DeviceResponse
 from .number import NumberResponse
 from .payment import PaymentResponse
+from .plan import PlanResponse
+from .user import UserResponse
 
 
 class OrderBase(BaseModel):
     """주문 기본 스키마"""
+
     user_id: int = Field(..., description="사용자 ID")
     plan_id: int = Field(..., description="요금제 ID")
     device_id: Optional[int] = Field(None, description="단말기 ID")
@@ -27,11 +29,13 @@ class OrderBase(BaseModel):
 
 class OrderCreate(OrderBase):
     """주문 생성 스키마"""
+
     pass
 
 
 class OrderUpdate(BaseModel):
     """주문 수정 스키마"""
+
     device_id: Optional[int] = None
     number_id: Optional[int] = None
     delivery_address: Optional[str] = None
@@ -42,12 +46,14 @@ class OrderUpdate(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     """주문 상태 변경 스키마"""
+
     status: str = Field(..., description="변경할 상태")
     note: Optional[str] = Field(None, description="상태 변경 메모")
 
 
 class OrderStatusHistoryResponse(BaseModel):
     """주문 상태 이력 응답 스키마"""
+
     id: int
     status: str
     previous_status: Optional[str]
@@ -55,13 +61,14 @@ class OrderStatusHistoryResponse(BaseModel):
     is_automatic: str
     admin_id: Optional[int]
     created_at: datetime
-    
+
     class Config:
         from_attributes = True
 
 
 class OrderResponse(BaseModel):
     """주문 응답 스키마"""
+
     id: int
     order_number: str
     status: str
@@ -81,7 +88,7 @@ class OrderResponse(BaseModel):
     can_cancel: bool
     created_at: datetime
     updated_at: datetime
-    
+
     # 관계 데이터
     user: Optional[UserResponse] = None
     plan: Optional[PlanResponse] = None
@@ -89,13 +96,14 @@ class OrderResponse(BaseModel):
     number: Optional[NumberResponse] = None
     payment: Optional[PaymentResponse] = None
     status_history: List[OrderStatusHistoryResponse] = []
-    
+
     class Config:
         from_attributes = True
 
 
 class OrderListResponse(BaseModel):
     """주문 목록 응답 스키마"""
+
     orders: List[OrderResponse]
     total: int
     page: int
@@ -105,6 +113,7 @@ class OrderListResponse(BaseModel):
 
 class OrderSummaryResponse(BaseModel):
     """주문 요약 응답 스키마"""
+
     id: int
     order_number: str
     status: str
@@ -114,13 +123,14 @@ class OrderSummaryResponse(BaseModel):
     device_name: Optional[str]
     number: Optional[str]
     created_at: datetime
-    
+
     class Config:
         from_attributes = True
 
 
 class OrderFilter(BaseModel):
     """주문 필터링 스키마"""
+
     status: Optional[str] = Field(None, description="상태 필터")
     user_id: Optional[int] = Field(None, description="사용자 ID 필터")
     plan_id: Optional[int] = Field(None, description="요금제 ID 필터")
@@ -133,6 +143,7 @@ class OrderFilter(BaseModel):
 
 class OrderStatusStats(BaseModel):
     """주문 상태 통계 스키마"""
+
     status: str
     count: int
     percentage: float
@@ -140,6 +151,7 @@ class OrderStatusStats(BaseModel):
 
 class OrderDashboard(BaseModel):
     """주문 대시보드 스키마"""
+
     total_orders: int
     pending_orders: int
     processing_orders: int

@@ -1,15 +1,22 @@
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from ...core.database import get_db
 from ...core.deps import get_current_admin
-from ...services.support_service import SupportService
-from ...schemas.support import (
-    FAQResponse, FAQListResponse, FAQCreate, FAQUpdate,
-    InquiryResponse, InquiryListResponse, InquiryCreate, InquiryUpdate
-)
 from ...models.admin import Admin
+from ...schemas.support import (
+    FAQCreate,
+    FAQListResponse,
+    FAQResponse,
+    FAQUpdate,
+    InquiryCreate,
+    InquiryListResponse,
+    InquiryResponse,
+    InquiryUpdate,
+)
+from ...services.support_service import SupportService
 
 router = APIRouter()
 
@@ -24,11 +31,11 @@ def get_support_service(db: Session = Depends(get_db)) -> SupportService:
 async def get_faqs(
     category: Optional[str] = Query(None, description="카테고리 필터"),
     search: Optional[str] = Query(None, description="검색어"),
-    support_service: SupportService = Depends(get_support_service)
+    support_service: SupportService = Depends(get_support_service),
 ):
     """
     FAQ 목록 조회
-    
+
     - **category**: 카테고리 필터
     - **search**: 검색어 (질문, 답변 내용 검색)
     """
@@ -36,10 +43,7 @@ async def get_faqs(
 
 
 @router.get("/faqs/{faq_id}", response_model=FAQResponse)
-async def get_faq(
-    faq_id: int,
-    support_service: SupportService = Depends(get_support_service)
-):
+async def get_faq(faq_id: int, support_service: SupportService = Depends(get_support_service)):
     """FAQ 상세 조회 (조회수 증가)"""
     return support_service.get_faq_by_id(faq_id)
 
@@ -48,7 +52,7 @@ async def get_faq(
 async def create_faq(
     faq_data: FAQCreate,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
 ):
     """FAQ 생성 (관리자 전용)"""
     return support_service.create_faq(faq_data)
@@ -59,7 +63,7 @@ async def update_faq(
     faq_id: int,
     faq_data: FAQUpdate,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
 ):
     """FAQ 수정 (관리자 전용)"""
     return support_service.update_faq(faq_id, faq_data)
@@ -69,7 +73,7 @@ async def update_faq(
 async def delete_faq(
     faq_id: int,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
 ):
     """FAQ 삭제 (관리자 전용)"""
     support_service.delete_faq(faq_id)
@@ -78,13 +82,10 @@ async def delete_faq(
 
 # 1:1 문의 관련 엔드포인트
 @router.post("/inquiries", response_model=InquiryResponse)
-async def create_inquiry(
-    inquiry_data: InquiryCreate,
-    support_service: SupportService = Depends(get_support_service)
-):
+async def create_inquiry(inquiry_data: InquiryCreate, support_service: SupportService = Depends(get_support_service)):
     """
     1:1 문의 접수
-    
+
     고객이 문의를 접수할 수 있습니다. 인증이 필요하지 않습니다.
     """
     return support_service.create_inquiry(inquiry_data)
@@ -98,23 +99,17 @@ async def get_inquiries(
     page: int = Query(1, ge=1, description="페이지 번호"),
     size: int = Query(20, ge=1, le=100, description="페이지 크기"),
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
 ):
     """문의 목록 조회 (관리자 전용)"""
-    return support_service.get_inquiries(
-        status=status,
-        category=category,
-        search=search,
-        page=page,
-        size=size
-    )
+    return support_service.get_inquiries(status=status, category=category, search=search, page=page, size=size)
 
 
 @router.get("/inquiries/{inquiry_id}", response_model=InquiryResponse)
 async def get_inquiry(
     inquiry_id: int,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
 ):
     """문의 상세 조회 (관리자 전용)"""
     return support_service.get_inquiry_by_id(inquiry_id)
@@ -125,15 +120,13 @@ async def update_inquiry(
     inquiry_id: int,
     inquiry_data: InquiryUpdate,
     support_service: SupportService = Depends(get_support_service),
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
 ):
     """문의 답변 (관리자 전용)"""
     return support_service.update_inquiry(inquiry_id, inquiry_data)
 
 
 @router.get("/categories", response_model=Dict[str, Any])
-async def get_inquiry_categories(
-    support_service: SupportService = Depends(get_support_service)
-):
+async def get_inquiry_categories(support_service: SupportService = Depends(get_support_service)):
     """문의 카테고리 목록"""
     return {"categories": support_service.get_inquiry_categories()}

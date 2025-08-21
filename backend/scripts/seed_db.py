@@ -3,8 +3,8 @@
 데이터베이스 시드 데이터 생성 스크립트
 사용법: python scripts/seed_db.py
 """
-import sys
 import os
+import sys
 
 # 프로젝트 루트를 Python 경로에 추가
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))

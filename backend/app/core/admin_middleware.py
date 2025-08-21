@@ -1,56 +1,53 @@
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response as StarletteResponse
-from sqlalchemy.orm import Session
-from typing import Callable
 import json
 import time
+from typing import Callable
 
-from .database import SessionLocal
-from ..models.admin_activity_log import AdminActivityLog
+from fastapi import Request, Response
+from sqlalchemy.orm import Session
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response as StarletteResponse
+
 from ..core.security import verify_token
+from ..models.admin_activity_log import AdminActivityLog
+from .database import SessionLocal
 
 
 class AdminActivityMiddleware(BaseHTTPMiddleware):
     """관리자 활동 로깅 미들웨어"""
-    
+
     def __init__(self, app, log_admin_routes: bool = True):
         super().__init__(app)
         self.log_admin_routes = log_admin_routes
-    
+
     async def dispatch(self, request: Request, call_next: Callable) -> StarletteResponse:
         # 시작 시간 기록
         start_time = time.time()
-        
+
         # 관리자 API 경로인지 확인
         is_admin_route = request.url.path.startswith("/api/v1/admin")
-        
+
         # 관리자 ID 추출
         admin_id = None
         if is_admin_route and self.log_admin_routes:
             admin_id = await self._extract_admin_id(request)
-        
+
         # 요청 데이터 수집
         request_data = await self._collect_request_data(request)
-        
+
         # 요청 처리
         response = await call_next(request)
-        
+
         # 처리 시간 계산
         process_time = time.time() - start_time
-        
+
         # 관리자 활동 로그 기록
         if admin_id and is_admin_route:
             await self._log_admin_activity(
-                admin_id=admin_id,
-                request=request,
-                response=response,
-                request_data=request_data,
-                process_time=process_time
+                admin_id=admin_id, request=request, response=response, request_data=request_data, process_time=process_time
             )
-        
+
         return response
-    
+
     async def _extract_admin_id(self, request: Request) -> int:
         """요청에서 관리자 ID 추출"""
         try:
@@ -58,14 +55,14 @@ class AdminActivityMiddleware(BaseHTTPMiddleware):
             auth_header = request.headers.get("authorization")
             if not auth_header or not auth_header.startswith("Bearer "):
                 return None
-            
+
             token = auth_header.split(" ")[1]
             admin_id = verify_token(token, "access")
-            
+
             return int(admin_id) if admin_id else None
         except Exception:
             return None
-    
+
     async def _collect_request_data(self, request: Request) -> dict:
         """요청 데이터 수집"""
         try:
@@ -77,23 +74,23 @@ class AdminActivityMiddleware(BaseHTTPMiddleware):
             return {}
         except Exception:
             return {}
-    
-    async def _log_admin_activity(self, admin_id: int, request: Request, 
-                                 response: Response, request_data: dict, 
-                                 process_time: float):
+
+    async def _log_admin_activity(
+        self, admin_id: int, request: Request, response: Response, request_data: dict, process_time: float
+    ):
         """관리자 활동 로그 기록"""
         try:
             db = SessionLocal()
-            
+
             # 액션 결정
             action = self._determine_action(request.method, request.url.path)
-            
+
             # 리소스 타입과 ID 추출
             resource_type, resource_id = self._extract_resource_info(request.url.path)
-            
+
             # 성공 여부 판단
             success = "true" if 200 <= response.status_code < 400 else "false"
-            
+
             # 활동 로그 생성
             activity_log = AdminActivityLog(
                 admin_id=admin_id,
@@ -107,21 +104,21 @@ class AdminActivityMiddleware(BaseHTTPMiddleware):
                 description=self._generate_description(action, resource_type, resource_id),
                 request_data=request_data if request_data else None,
                 response_status=response.status_code,
-                success=success
+                success=success,
             )
-            
+
             db.add(activity_log)
             db.commit()
             db.close()
-            
+
         except Exception as e:
             # 로깅 실패는 메인 요청에 영향을 주지 않도록
             print(f"Admin activity logging failed: {e}")
-    
+
     def _determine_action(self, method: str, path: str) -> str:
         """HTTP 메소드와 경로로 액션 결정"""
         path_parts = path.strip("/").split("/")
-        
+
         if "orders" in path:
             if method == "GET":
                 return "VIEW_ORDERS" if "orders" == path_parts[-1] else "VIEW_ORDER"
@@ -149,16 +146,16 @@ class AdminActivityMiddleware(BaseHTTPMiddleware):
             return "VIEW_DASHBOARD"
         elif "statistics" in path:
             return "VIEW_STATISTICS"
-        
+
         return f"{method}_{path.replace('/', '_').upper()}"
-    
+
     def _extract_resource_info(self, path: str) -> tuple:
         """경로에서 리소스 타입과 ID 추출"""
         path_parts = path.strip("/").split("/")
-        
+
         resource_type = None
         resource_id = None
-        
+
         # 리소스 타입 결정
         if "orders" in path_parts:
             resource_type = "order"
@@ -170,30 +167,30 @@ class AdminActivityMiddleware(BaseHTTPMiddleware):
             resource_type = "plan"
         elif "devices" in path_parts:
             resource_type = "device"
-        
+
         # 리소스 ID 추출 (숫자인 경우)
         for part in path_parts:
             if part.isdigit():
                 resource_id = int(part)
                 break
-        
+
         return resource_type, resource_id
-    
+
     def _get_client_ip(self, request: Request) -> str:
         """클라이언트 IP 주소 추출"""
         # X-Forwarded-For 헤더 확인 (프록시 환경)
         forwarded_for = request.headers.get("x-forwarded-for")
         if forwarded_for:
             return forwarded_for.split(",")[0].strip()
-        
+
         # X-Real-IP 헤더 확인
         real_ip = request.headers.get("x-real-ip")
         if real_ip:
             return real_ip
-        
+
         # 직접 연결된 클라이언트 IP
         return request.client.host if request.client else "unknown"
-    
+
     def _generate_description(self, action: str, resource_type: str, resource_id: int) -> str:
         """활동 설명 생성"""
         action_descriptions = {
@@ -211,7 +208,7 @@ class AdminActivityMiddleware(BaseHTTPMiddleware):
             "UPDATE_ADMIN": f"관리자 정보 수정 (ID: {resource_id})",
             "DELETE_ADMIN": f"관리자 삭제 (ID: {resource_id})",
             "VIEW_DASHBOARD": "대시보드 조회",
-            "VIEW_STATISTICS": "통계 조회"
+            "VIEW_STATISTICS": "통계 조회",
         }
-        
+
         return action_descriptions.get(action, f"{action} 수행")

@@ -1,10 +1,12 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.sql import func
+
 from .base import Base
 
 
 class FAQ(Base):
     """FAQ 모델"""
+
     __tablename__ = "faqs"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -22,6 +24,7 @@ class FAQ(Base):
 
 class Inquiry(Base):
     """1:1 문의 모델"""
+
     __tablename__ = "inquiries"
 
     id = Column(Integer, primary_key=True, index=True)

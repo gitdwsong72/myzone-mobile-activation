@@ -1,20 +1,15 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, Query, HTTPException, status
-from sqlalchemy.orm import Session
-from decimal import Decimal
 import math
+from decimal import Decimal
+from typing import List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.orm import Session
 
 from ...core.database import get_db
 from ...core.deps import get_current_admin
-from ...services.plan_service import PlanService
-from ...schemas.plan import (
-    PlanResponse, 
-    PlanListResponse, 
-    PlanCreate, 
-    PlanUpdate,
-    PlanFilter
-)
 from ...models.admin import Admin
+from ...schemas.plan import PlanCreate, PlanFilter, PlanListResponse, PlanResponse, PlanUpdate
+from ...services.plan_service import PlanService
 
 router = APIRouter()
 
@@ -32,11 +27,11 @@ async def get_plans(
     search: Optional[str] = Query(None, description="검색어"),
     page: int = Query(1, ge=1, description="페이지 번호"),
     size: int = Query(20, ge=1, le=100, description="페이지 크기"),
-    plan_service: PlanService = Depends(get_plan_service)
+    plan_service: PlanService = Depends(get_plan_service),
 ):
     """
     요금제 목록 조회
-    
+
     - **category**: 카테고리별 필터링 (5G, LTE, 데이터중심, 통화중심)
     - **min_price**: 최소 가격 필터
     - **max_price**: 최대 가격 필터
@@ -44,30 +39,16 @@ async def get_plans(
     - **page**: 페이지 번호 (기본값: 1)
     - **size**: 페이지 크기 (기본값: 20, 최대: 100)
     """
-    filters = PlanFilter(
-        category=category,
-        min_price=min_price,
-        max_price=max_price,
-        search=search,
-        is_active=True
-    )
-    
+    filters = PlanFilter(category=category, min_price=min_price, max_price=max_price, search=search, is_active=True)
+
     plans, total = plan_service.get_plans(filters, page, size)
     total_pages = math.ceil(total / size)
-    
-    return PlanListResponse(
-        plans=plans,
-        total=total,
-        page=page,
-        size=size,
-        total_pages=total_pages
-    )
+
+    return PlanListResponse(plans=plans, total=total, page=page, size=size, total_pages=total_pages)
 
 
 @router.get("/categories", response_model=List[str])
-async def get_plan_categories(
-    plan_service: PlanService = Depends(get_plan_service)
-):
+async def get_plan_categories(plan_service: PlanService = Depends(get_plan_service)):
     """
     사용 가능한 요금제 카테고리 목록 조회
     """
@@ -76,8 +57,7 @@ async def get_plan_categories(
 
 @router.get("/recommended", response_model=List[PlanResponse])
 async def get_recommended_plans(
-    limit: int = Query(3, ge=1, le=10, description="추천 요금제 개수"),
-    plan_service: PlanService = Depends(get_plan_service)
+    limit: int = Query(3, ge=1, le=10, description="추천 요금제 개수"), plan_service: PlanService = Depends(get_plan_service)
 ):
     """
     추천 요금제 조회 (할인율이 높은 순)
@@ -86,19 +66,13 @@ async def get_recommended_plans(
 
 
 @router.get("/{plan_id}", response_model=PlanResponse)
-async def get_plan(
-    plan_id: int,
-    plan_service: PlanService = Depends(get_plan_service)
-):
+async def get_plan(plan_id: int, plan_service: PlanService = Depends(get_plan_service)):
     """
     요금제 상세 정보 조회
     """
     plan = plan_service.get_plan_by_id(plan_id)
     if not plan.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="요금제를 찾을 수 없습니다."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="요금제를 찾을 수 없습니다.")
     return plan
 
 
@@ -107,7 +81,7 @@ async def get_plan(
 async def create_plan(
     plan_data: PlanCreate,
     plan_service: PlanService = Depends(get_plan_service),
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
 ):
     """
     요금제 생성 (관리자 전용)
@@ -120,7 +94,7 @@ async def update_plan(
     plan_id: int,
     plan_data: PlanUpdate,
     plan_service: PlanService = Depends(get_plan_service),
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
 ):
     """
     요금제 수정 (관리자 전용)
@@ -130,9 +104,7 @@ async def update_plan(
 
 @router.delete("/{plan_id}")
 async def delete_plan(
-    plan_id: int,
-    plan_service: PlanService = Depends(get_plan_service),
-    current_admin: Admin = Depends(get_current_admin)
+    plan_id: int, plan_service: PlanService = Depends(get_plan_service), current_admin: Admin = Depends(get_current_admin)
 ):
     """
     요금제 삭제 (관리자 전용) - 소프트 삭제
@@ -151,26 +123,14 @@ async def get_all_plans_for_admin(
     page: int = Query(1, ge=1, description="페이지 번호"),
     size: int = Query(20, ge=1, le=100, description="페이지 크기"),
     plan_service: PlanService = Depends(get_plan_service),
-    current_admin: Admin = Depends(get_current_admin)
+    current_admin: Admin = Depends(get_current_admin),
 ):
     """
     모든 요금제 조회 (관리자 전용) - 비활성화된 요금제 포함
     """
-    filters = PlanFilter(
-        category=category,
-        min_price=min_price,
-        max_price=max_price,
-        search=search,
-        is_active=is_active
-    )
-    
+    filters = PlanFilter(category=category, min_price=min_price, max_price=max_price, search=search, is_active=is_active)
+
     plans, total = plan_service.get_plans(filters, page, size)
     total_pages = math.ceil(total / size)
-    
-    return PlanListResponse(
-        plans=plans,
-        total=total,
-        page=page,
-        size=size,
-        total_pages=total_pages
-    )
+
+    return PlanListResponse(plans=plans, total=total, page=page, size=size, total_pages=total_pages)

@@ -1,33 +1,32 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
-import os
-from app.core.config import settings
+
 from app.api.v1.api import api_router
+from app.core.background_tasks import lifespan
+from app.core.config import settings
+from app.core.cors_config import CORSConfig, RateLimitConfig, SecurityPolicy
+from app.core.error_tracking import error_tracker
+from app.core.health_check import health_monitor
+from app.core.logging_config import setup_logging
 from app.core.middleware import LoggingMiddleware
+from app.core.monitoring import MonitoringMiddleware, metrics_collector, system_monitor
 from app.core.security_middleware import (
     AdvancedRateLimitMiddleware,
     DDoSProtectionMiddleware,
+    EnhancedSecurityHeadersMiddleware,
     SQLInjectionProtectionMiddleware,
     XSSProtectionMiddleware,
-    EnhancedSecurityHeadersMiddleware
 )
-from app.core.cors_config import CORSConfig, SecurityPolicy, RateLimitConfig
-from app.core.background_tasks import lifespan
-from app.core.logging_config import setup_logging
-from app.core.monitoring import metrics_collector, system_monitor, MonitoringMiddleware
-from app.core.error_tracking import error_tracker
-from app.core.health_check import health_monitor
 
 # 로깅 시스템 초기화
 setup_logging()
 
 app = FastAPI(
-    title="MyZone Mobile Activation Service",
-    description="핸드폰 개통 서비스 API",
-    version="1.0.0",
-    lifespan=lifespan
+    title="MyZone Mobile Activation Service", description="핸드폰 개통 서비스 API", version="1.0.0", lifespan=lifespan
 )
 
 # 미들웨어 추가 (순서 중요 - 역순으로 실행됨)
@@ -35,10 +34,7 @@ app = FastAPI(
 app.add_middleware(LoggingMiddleware)
 
 # 2. 보안 헤더 (응답에 헤더 추가)
-app.add_middleware(
-    EnhancedSecurityHeadersMiddleware,
-    csp_policy=SecurityPolicy.get_content_security_policy()
-)
+app.add_middleware(EnhancedSecurityHeadersMiddleware, csp_policy=SecurityPolicy.get_content_security_policy())
 
 # 3. XSS 방어
 app.add_middleware(XSSProtectionMiddleware)
@@ -52,7 +48,7 @@ app.add_middleware(
     DDoSProtectionMiddleware,
     suspicious_threshold=ddos_config["suspicious_threshold"],
     block_duration=ddos_config["block_duration"],
-    whitelist_ips=ddos_config["whitelist_ips"]
+    whitelist_ips=ddos_config["whitelist_ips"],
 )
 
 # 6. 고급 Rate Limiting
@@ -62,14 +58,11 @@ app.add_middleware(
     default_period=60,
     burst_calls=20,
     burst_period=1,
-    endpoint_limits=RateLimitConfig.get_endpoint_limits()
+    endpoint_limits=RateLimitConfig.get_endpoint_limits(),
 )
 
 # 7. 신뢰할 수 있는 호스트 확인
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=CORSConfig.get_trusted_hosts()
-)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=CORSConfig.get_trusted_hosts())
 
 # 8. 모니터링 미들웨어
 app.add_middleware(MonitoringMiddleware, metrics_collector=metrics_collector)
@@ -88,11 +81,14 @@ app.include_router(api_router, prefix="/api/v1")
 
 # 헬스체크 라우터 등록
 from app.api.v1.health import router as health_router
+
 app.include_router(health_router, prefix="/health", tags=["health"])
+
 
 @app.get("/")
 async def root():
     return {"message": "MyZone Mobile Activation Service API"}
+
 
 # 기본 헬스체크는 유지 (하위 호환성)
 @app.get("/health")

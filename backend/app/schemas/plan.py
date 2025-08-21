@@ -1,10 +1,12 @@
-from typing import Optional, List
 from decimal import Decimal
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
 class PlanBase(BaseModel):
     """요금제 기본 스키마"""
+
     name: str = Field(..., description="요금제 이름")
     description: Optional[str] = Field(None, description="요금제 설명")
     category: str = Field(..., description="카테고리 (5G, LTE, 데이터중심, 통화중심)")
@@ -22,11 +24,13 @@ class PlanBase(BaseModel):
 
 class PlanCreate(PlanBase):
     """요금제 생성 스키마"""
+
     pass
 
 
 class PlanUpdate(BaseModel):
     """요금제 수정 스키마"""
+
     name: Optional[str] = None
     description: Optional[str] = None
     category: Optional[str] = None
@@ -44,15 +48,17 @@ class PlanUpdate(BaseModel):
 
 class PlanResponse(PlanBase):
     """요금제 응답 스키마"""
+
     id: int
     discounted_price: Decimal = Field(..., description="할인 적용된 가격")
-    
+
     class Config:
         from_attributes = True
 
 
 class PlanListResponse(BaseModel):
     """요금제 목록 응답 스키마"""
+
     plans: List[PlanResponse]
     total: int
     page: int
@@ -62,6 +68,7 @@ class PlanListResponse(BaseModel):
 
 class PlanFilter(BaseModel):
     """요금제 필터링 스키마"""
+
     category: Optional[str] = Field(None, description="카테고리 필터")
     min_price: Optional[Decimal] = Field(None, description="최소 가격")
     max_price: Optional[Decimal] = Field(None, description="최대 가격")

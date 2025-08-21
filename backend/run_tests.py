@@ -2,9 +2,9 @@
 """
 테스트 실행 스크립트
 """
+import os
 import subprocess
 import sys
-import os
 
 
 def run_tests():
@@ -12,17 +12,10 @@ def run_tests():
     # 환경 변수 설정
     os.environ["TESTING"] = "1"
     os.environ["DATABASE_URL"] = "sqlite:///./test.db"
-    
+
     # pytest 실행
-    cmd = [
-        sys.executable, "-m", "pytest",
-        "tests/",
-        "-v",
-        "--tb=short",
-        "--cov=app",
-        "--cov-report=term-missing"
-    ]
-    
+    cmd = [sys.executable, "-m", "pytest", "tests/", "-v", "--tb=short", "--cov=app", "--cov-report=term-missing"]
+
     try:
         result = subprocess.run(cmd, check=True)
         print("✅ 모든 테스트가 성공적으로 완료되었습니다!")
@@ -36,15 +29,9 @@ def run_unit_tests():
     """단위 테스트만 실행"""
     os.environ["TESTING"] = "1"
     os.environ["DATABASE_URL"] = "sqlite:///./test.db"
-    
-    cmd = [
-        sys.executable, "-m", "pytest",
-        "tests/test_services/",
-        "tests/test_models/",
-        "-v",
-        "-m", "unit"
-    ]
-    
+
+    cmd = [sys.executable, "-m", "pytest", "tests/test_services/", "tests/test_models/", "-v", "-m", "unit"]
+
     try:
         result = subprocess.run(cmd, check=True)
         print("✅ 단위 테스트가 성공적으로 완료되었습니다!")
@@ -58,14 +45,9 @@ def run_api_tests():
     """API 테스트만 실행"""
     os.environ["TESTING"] = "1"
     os.environ["DATABASE_URL"] = "sqlite:///./test.db"
-    
-    cmd = [
-        sys.executable, "-m", "pytest",
-        "tests/test_api/",
-        "-v",
-        "-m", "api"
-    ]
-    
+
+    cmd = [sys.executable, "-m", "pytest", "tests/test_api/", "-v", "-m", "api"]
+
     try:
         result = subprocess.run(cmd, check=True)
         print("✅ API 테스트가 성공적으로 완료되었습니다!")

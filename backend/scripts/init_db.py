@@ -4,14 +4,14 @@
 - 테이블 생성 (마이그레이션 실행)
 - 시드 데이터 삽입
 """
-import sys
 import os
 import subprocess
+import sys
 
 # 프로젝트 루트를 Python 경로에 추가
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from app.core.database import engine, Base
+from app.core.database import Base, engine
 from app.db.seed_data import run_seed_data
 from app.models import *  # 모든 모델 임포트
 
@@ -37,9 +37,9 @@ def run_migrations():
             ["python", "-m", "alembic", "upgrade", "head"],
             cwd=os.path.dirname(os.path.dirname(__file__)),
             capture_output=True,
-            text=True
+            text=True,
         )
-        
+
         if result.returncode == 0:
             print("✅ 마이그레이션 완료")
             return True
@@ -57,16 +57,16 @@ def main():
     """메인 실행 함수"""
     print("🚀 MyZone 데이터베이스 초기화 시작")
     print("=" * 50)
-    
+
     # 1. 마이그레이션 실행 또는 테이블 생성
     if not run_migrations():
         print("❌ 데이터베이스 초기화 실패")
         sys.exit(1)
-    
+
     # 2. 시드 데이터 생성
     print("\n" + "=" * 50)
     run_seed_data()
-    
+
     print("\n" + "=" * 50)
     print("🎉 MyZone 데이터베이스 초기화 완료!")
     print("\n📊 생성된 데이터:")
