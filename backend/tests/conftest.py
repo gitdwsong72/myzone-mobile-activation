@@ -21,6 +21,7 @@ from app.models.order import Order
 from app.models.payment import Payment
 from app.models.plan import Plan
 from app.models.user import User
+from datetime import date # Added this import
 
 # 테스트용 인메모리 SQLite 데이터베이스
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -76,7 +77,7 @@ def sample_user_data():
         "name": "홍길동",
         "phone": "010-1234-5678",
         "email": "hong@example.com",
-        "birth_date": "1990-01-01",
+        "birth_date": date(1990, 1, 1), # Modified line
         "gender": "M",
         "address": "서울시 강남구 테헤란로 123",
     }
