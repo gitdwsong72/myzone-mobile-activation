@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../services/api';
+import { planAPI } from '../../services/api';
 
 // 요금제 타입 정의
 interface Plan {
@@ -33,16 +33,14 @@ const initialState: PlanState = {
 
 // 비동기 액션: 요금제 목록 조회
 export const fetchPlans = createAsyncThunk('plans/fetchPlans', async () => {
-  const response = await api.get('/plans');
-  return response.data;
+  return await planAPI.getAll();
 });
 
 // 비동기 액션: 요금제 상세 조회
 export const fetchPlanById = createAsyncThunk(
   'plans/fetchPlanById',
   async (planId: number) => {
-    const response = await api.get(`/plans/${planId}`);
-    return response.data;
+    return await planAPI.getById(planId);
   }
 );
 
