@@ -2,6 +2,7 @@
   "name": "myzone-frontend",
   "version": "1.0.0",
   "description": "MyZone 핸드폰 개통 서비스 프론트엔드",
+  "homepage": "/myzone-mobile-activation",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.7",
