@@ -1,0 +1,165 @@
+.demo-banner {
+  background: linear-gradient(135deg, #ff6b6b, #ffa726);
+  color: white;
+  border-radius: 8px;
+  margin: 16px;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+.demo-banner-main {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+.demo-banner-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.demo-banner-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.demo-banner-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.demo-banner-message {
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.demo-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.demo-banner-toggle,
+.demo-banner-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.demo-banner-toggle:hover,
+.demo-banner-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.demo-banner-details {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.demo-banner-details h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.demo-banner-details ul {
+  margin: 0 0 12px 0;
+  padding-left: 20px;
+}
+
+.demo-banner-details li {
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+  opacity: 0.9;
+}
+
+.demo-banner-note {
+  font-size: 12px;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* 애니메이션 */
+@keyframes slideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .demo-banner {
+    margin: 8px;
+    border-radius: 6px;
+  }
+  
+  .demo-banner-main {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  
+  .demo-banner-icon {
+    font-size: 20px;
+  }
+  
+  .demo-banner-title {
+    font-size: 14px;
+  }
+  
+  .demo-banner-message {
+    font-size: 13px;
+  }
+  
+  .demo-banner-toggle,
+  .demo-banner-close {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .demo-banner-details {
+    padding: 12px;
+  }
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+  .demo-banner {
+    background: #d32f2f;
+    border: 2px solid #fff;
+  }
+  
+  .demo-banner-toggle,
+  .demo-banner-close {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* 애니메이션 감소 모드 지원 */
+@media (prefers-reduced-motion: reduce) {
+  .demo-banner {
+    animation: none;
+  }
+}

@@ -5,6 +5,9 @@ import { useToast } from '../../components/Common/Toast';
 import Button from '../../components/Common/Button';
 import Modal from '../../components/Common/Modal';
 import ProgressBar from '../../components/Common/ProgressBar';
+import DemoWarningModal from '../../components/Common/DemoWarningModal';
+import { useDemoMode } from '../../hooks/useDemoMode';
+import { DEMO_CONFIG } from '../../config/demo';
 import './UserInfoPage.css';
 
 interface UserInfo {
@@ -35,6 +38,16 @@ const UserInfoPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { showError, showSuccess, showInfo } = useToast();
 
+  // 데모 모드 훅
+  const {
+    isDemo,
+    isWarningOpen,
+    warningOptions,
+    handleVerificationAttempt,
+    closeDemoWarning,
+    confirmDemoWarning
+  } = useDemoMode();
+
   const [userInfo, setUserInfo] = useState<UserInfo>({
     name: '',
     birthDate: '',
@@ -47,6 +60,24 @@ const UserInfoPage: React.FC = () => {
       address2: '',
     },
   });
+
+  // 데모 모드에서 사용자 정보 자동 채우기
+  useEffect(() => {
+    if (isDemo) {
+      setUserInfo({
+        name: DEMO_CONFIG.DEMO_USER.name,
+        birthDate: DEMO_CONFIG.DEMO_USER.birthDate,
+        gender: DEMO_CONFIG.DEMO_USER.gender === 'M' ? 'male' : 'female',
+        phone: DEMO_CONFIG.DEMO_USER.phone,
+        email: DEMO_CONFIG.DEMO_USER.email,
+        address: {
+          zipCode: '06234',
+          address1: DEMO_CONFIG.DEMO_USER.address,
+          address2: '101동 1001호',
+        },
+      });
+    }
+  }, [isDemo]);
 
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isVerified, setIsVerified] = useState(false);
@@ -215,20 +246,30 @@ const UserInfoPage: React.FC = () => {
     showSuccess('주소가 선택되었습니다.');
   };
 
-  const startVerification = (method: 'sms' | 'certificate' | 'simple') => {
-    if (!userInfo.name || !userInfo.birthDate || !userInfo.phone) {
-      showError('기본 정보를 먼저 입력해주세요.');
-      return;
-    }
-
+  const startVerificationProcess = (method: 'sms' | 'certificate' | 'simple') => {
     setVerificationMethod(method);
     setShowVerificationModal(true);
 
     if (method === 'sms') {
       // SMS 인증 코드 발송
       setVerificationTimer(180); // 3분
-      showInfo('인증번호가 발송되었습니다. 3분 내에 입력해주세요.');
+      if (isDemo) {
+        showInfo('데모 모드: 인증번호 123456을 입력해주세요.');
+        setVerificationCode('123456');
+      } else {
+        showInfo('인증번호가 발송되었습니다. 3분 내에 입력해주세요.');
+      }
     }
+  };
+
+  const startVerification = (method: 'sms' | 'certificate' | 'simple') => {
+    if (!userInfo.name || !userInfo.birthDate || !userInfo.phone) {
+      showError('기본 정보를 먼저 입력해주세요.');
+      return;
+    }
+
+    // 데모 모드에서는 경고 표시 후 진행
+    handleVerificationAttempt(() => startVerificationProcess(method));
   };
 
   const verifyCode = () => {
@@ -241,7 +282,11 @@ const UserInfoPage: React.FC = () => {
     if (verificationCode === '123456') {
       setIsVerified(true);
       setShowVerificationModal(false);
-      showSuccess('본인인증이 완료되었습니다.');
+      if (isDemo) {
+        showSuccess('데모 모드: 본인인증이 완료되었습니다.');
+      } else {
+        showSuccess('본인인증이 완료되었습니다.');
+      }
     } else {
       showError('인증번호가 올바르지 않습니다.');
     }
@@ -252,7 +297,11 @@ const UserInfoPage: React.FC = () => {
     setTimeout(() => {
       setIsVerified(true);
       setShowVerificationModal(false);
-      showSuccess('공인인증서 인증이 완료되었습니다.');
+      if (isDemo) {
+        showSuccess('데모 모드: 공인인증서 인증이 완료되었습니다.');
+      } else {
+        showSuccess('공인인증서 인증이 완료되었습니다.');
+      }
     }, 2000);
   };
 
@@ -261,7 +310,11 @@ const UserInfoPage: React.FC = () => {
     setTimeout(() => {
       setIsVerified(true);
       setShowVerificationModal(false);
-      showSuccess('간편인증이 완료되었습니다.');
+      if (isDemo) {
+        showSuccess('데모 모드: 간편인증이 완료되었습니다.');
+      } else {
+        showSuccess('간편인증이 완료되었습니다.');
+      }
     }, 1500);
   };
 
@@ -331,6 +384,12 @@ const UserInfoPage: React.FC = () => {
       </div>
 
       <div className="form-container">
+        {isDemo && (
+          <div className="demo-form-notice">
+            🎭 <strong>데모 모드:</strong> 개인정보가 자동으로 입력되었습니다. 실제 인증은 이루어지지 않습니다.
+          </div>
+        )}
+        
         <form className="user-info-form" onSubmit={(e) => e.preventDefault()}>
           {/* 기본 정보 섹션 */}
           <div className="form-section">
@@ -698,6 +757,16 @@ const UserInfoPage: React.FC = () => {
           )}
         </div>
       </Modal>
+
+      {/* 데모 경고 모달 */}
+      <DemoWarningModal
+        isOpen={isWarningOpen}
+        onClose={closeDemoWarning}
+        onConfirm={confirmDemoWarning}
+        type={warningOptions.type}
+        title={warningOptions.title}
+        message={warningOptions.message}
+      />
     </div>
   );
 };

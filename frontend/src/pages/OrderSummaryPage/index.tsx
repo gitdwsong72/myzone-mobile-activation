@@ -6,6 +6,8 @@ import { nextStep, prevStep } from '../../store/slices/orderSlice';
 import Button from '../../components/Common/Button';
 import Modal from '../../components/Common/Modal';
 import ProgressBar from '../../components/Common/ProgressBar';
+import DemoWarningModal from '../../components/Common/DemoWarningModal';
+import { useDemoMode } from '../../hooks/useDemoMode';
 import './OrderSummaryPage.css';
 
 interface TermsItem {
@@ -24,6 +26,16 @@ const OrderSummaryPage: React.FC = () => {
   const { selectedPlan, selectedDevice, selectedNumber, userInfo, currentStep } = useSelector(
     (state: RootState) => state.order
   );
+
+  // 데모 모드 훅
+  const {
+    isDemo,
+    isWarningOpen,
+    warningOptions,
+    handleOrderAttempt,
+    closeDemoWarning,
+    confirmDemoWarning
+  } = useDemoMode();
 
   const [terms, setTerms] = useState<TermsItem[]>([
     {
@@ -123,15 +135,21 @@ const OrderSummaryPage: React.FC = () => {
     navigate('/numbers');
   };
 
-  // 다음 단계로 이동 (결제)
+  // 실제 주문 진행 로직
+  const proceedToPayment = () => {
+    dispatch(nextStep());
+    navigate('/payment');
+  };
+
+  // 다음 단계로 이동 (결제) - 데모 경고 포함
   const handleNextStep = () => {
     if (!allAgreed) {
       alert('필수 약관에 동의해주세요.');
       return;
     }
     
-    dispatch(nextStep());
-    navigate('/payment');
+    // 데모 모드에서는 경고 표시 후 진행
+    handleOrderAttempt(proceedToPayment);
   };
 
   // 총 금액 계산
@@ -476,6 +494,16 @@ const OrderSummaryPage: React.FC = () => {
           {selectedTerms?.content}
         </div>
       </Modal>
+
+      {/* 데모 경고 모달 */}
+      <DemoWarningModal
+        isOpen={isWarningOpen}
+        onClose={closeDemoWarning}
+        onConfirm={confirmDemoWarning}
+        type={warningOptions.type}
+        title={warningOptions.title}
+        message={warningOptions.message}
+      />
     </div>
   );
 };

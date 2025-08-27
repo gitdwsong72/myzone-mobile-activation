@@ -6,6 +6,9 @@ import { prevStep, nextStep } from '../../store/slices/orderSlice';
 import Button from '../../components/Common/Button';
 import ProgressBar from '../../components/Common/ProgressBar';
 import LoadingSpinner from '../../components/Common/LoadingSpinner';
+import DemoWarningModal from '../../components/Common/DemoWarningModal';
+import { useDemoMode } from '../../hooks/useDemoMode';
+import { DEMO_CONFIG } from '../../config/demo';
 import './PaymentPage.css';
 
 interface PaymentMethod {
@@ -38,6 +41,16 @@ const PaymentPage: React.FC = () => {
   const { selectedPlan, selectedDevice, selectedNumber, userInfo, currentStep } = useSelector(
     (state: RootState) => state.order
   );
+
+  // 데모 모드 훅
+  const {
+    isDemo,
+    isWarningOpen,
+    warningOptions,
+    handlePaymentAttempt,
+    closeDemoWarning,
+    confirmDemoWarning
+  } = useDemoMode();
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('card');
   const [selectedInstallment, setSelectedInstallment] = useState<number>(0);
@@ -123,6 +136,20 @@ const PaymentPage: React.FC = () => {
 
   const installmentOptions = calculateInstallmentOptions();
 
+  // 데모 모드에서 폼 자동 채우기
+  useEffect(() => {
+    if (isDemo && selectedPaymentMethod === 'card') {
+      setPaymentForm({
+        cardNumber: DEMO_CONFIG.DEMO_PAYMENT.cardNumber,
+        expiryDate: DEMO_CONFIG.DEMO_PAYMENT.expiryDate,
+        cvv: DEMO_CONFIG.DEMO_PAYMENT.cvv,
+        cardholderName: DEMO_CONFIG.DEMO_PAYMENT.cardHolder,
+        birthDate: '900101',
+        password: '12',
+      });
+    }
+  }, [isDemo, selectedPaymentMethod]);
+
   // 폼 입력 처리
   const handleFormChange = (field: keyof PaymentForm, value: string) => {
     setPaymentForm(prev => ({ ...prev, [field]: value }));
@@ -178,12 +205,8 @@ const PaymentPage: React.FC = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // 결제 처리
-  const handlePayment = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
+  // 실제 결제 처리 로직
+  const processPayment = async () => {
     setIsProcessing(true);
 
     try {
@@ -199,6 +222,16 @@ const PaymentPage: React.FC = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  // 결제 처리 (데모 경고 포함)
+  const handlePayment = () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    // 데모 모드에서는 경고 표시 후 진행
+    handlePaymentAttempt(processPayment);
   };
 
   // 이전 단계로 이동
@@ -312,6 +345,12 @@ const PaymentPage: React.FC = () => {
               <div className="payment-form-section">
                 <h3 className="payment-form-header">카드 정보 입력</h3>
                 <form className="payment-form">
+                  {isDemo && (
+                    <div className="demo-form-notice">
+                      🎭 <strong>데모 모드:</strong> 결제 정보가 자동으로 입력되었습니다. 실제 결제는 이루어지지 않습니다.
+                    </div>
+                  )}
+                  
                   <div className="form-group">
                     <label htmlFor="cardNumber" className="form-label">
                       카드번호 *
@@ -555,11 +594,21 @@ const PaymentPage: React.FC = () => {
               <LoadingSpinner />
             </div>
             <div className="payment-loading-text">
-              결제를 처리하고 있습니다...
+              {isDemo ? '데모 결제를 처리하고 있습니다...' : '결제를 처리하고 있습니다...'}
             </div>
           </div>
         </div>
       )}
+
+      {/* 데모 경고 모달 */}
+      <DemoWarningModal
+        isOpen={isWarningOpen}
+        onClose={closeDemoWarning}
+        onConfirm={confirmDemoWarning}
+        type={warningOptions.type}
+        title={warningOptions.title}
+        message={warningOptions.message}
+      />
     </div>
   );
 };

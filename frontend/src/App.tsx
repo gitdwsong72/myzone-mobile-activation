@@ -7,6 +7,7 @@ import MainLayout from './components/Layout/MainLayout';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import ToastContainer from './components/Common/Toast';
 import LoadingSpinner from './components/Common/LoadingSpinner';
+import DemoBanner from './components/Common/DemoBanner';
 
 // 커스텀 훅
 import { useScreenSize } from './hooks/useScreenSize';
@@ -51,6 +52,9 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="App">
+        {/* 데모 모드 배너 */}
+        {!isAdminRoute && <DemoBanner showDetails={true} />}
+        
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* 고객 대면 페이지 */}
