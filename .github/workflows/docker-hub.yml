@@ -1,11 +1,8 @@
 name: Build and Push to Docker Hub
 
 on:
-  push:
-    branches: [ main, develop ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ main ]
+  # 워크플로우 비활성화 - GitHub Pages 배포만 사용
+  workflow_dispatch:
 
 env:
   REGISTRY: docker.io

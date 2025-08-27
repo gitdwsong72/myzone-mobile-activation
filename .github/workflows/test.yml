@@ -1,10 +1,8 @@
 name: Test Suite
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+  # 워크플로우 비활성화 - GitHub Pages 배포만 사용
+  workflow_dispatch:
 
 permissions:
   contents: read
