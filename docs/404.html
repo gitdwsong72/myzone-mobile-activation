@@ -1,23 +1,73 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <title>MyZone 모바일 개통 서비스</title>
+  <meta charset="utf-8">
+  <title>MyZone Mobile Activation</title>
+  <meta name="description" content="MyZone 모바일 개통 서비스">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
   <script type="text/javascript">
     // GitHub Pages SPA 라우팅 지원
-    // 현재 URL을 파싱하여 React Router로 리다이렉트
-    var pathSegmentsToKeep = 1;
-    var l = window.location;
-    l.replace(
-      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-      l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/app/' +
-      '?/' +
-      l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-      (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-      l.hash
-    );
+    // 이 스크립트는 404 페이지에서 올바른 React 라우트로 리다이렉트합니다
+    (function(l) {
+      if (l.search[1] === '/' ) {
+        var decoded = l.search.slice(1).split('&').map(function(s) { 
+          return s.replace(/~and~/g, '&')
+        }).join('?');
+        window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location))
   </script>
 </head>
 <body>
+  <div id="root">
+    <div style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+    ">
+      <div>
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">🚀 MyZone</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem;">페이지를 로딩 중입니다...</p>
+        <div style="
+          width: 40px;
+          height: 40px;
+          border: 4px solid rgba(255,255,255,0.3);
+          border-top: 4px solid white;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto;
+        "></div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  
+  <script>
+    // 3초 후에도 React 앱이 로드되지 않으면 메인 페이지로 리다이렉트
+    setTimeout(function() {
+      if (!document.querySelector('#root > div > div')) {
+        window.location.href = '/myzone-mobile-activation/';
+      }
+    }, 3000);
+  </script>
 </body>
 </html>
