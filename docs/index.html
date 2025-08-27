@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyZone - 모바일 개통 서비스</title>
+    <meta name="description" content="온라인 휴대폰 개통 신청 서비스 - 요금제 선택부터 결제까지 한 번에!">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        .nav a:hover {
+            opacity: 0.8;
+        }
+        
+        main {
+            margin-top: 80px;
+            padding: 4rem 0;
+        }
+        
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 4rem;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .cta-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            opacity: 0.9;
+        }
+        
+        .demo-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 4rem;
+        }
+        
+        .demo-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-section p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .demo-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .demo-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .demo-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .status-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 4rem;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .status-item .status-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-item .status-text {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        footer {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .nav {
+                display: none;
+            }
+            
+            .demo-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .demo-button {
+                width: 200px;
+            }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">📱 MyZone</a>
+                <nav class="nav">
+                    <a href="#features">기능</a>
+                    <a href="#demo">데모</a>
+                    <a href="#status">상태</a>
+                    <a href="https://github.com/gitdwsong72/myzone-mobile-activation" target="_blank">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1>MyZone 모바일 개통 서비스</h1>
+                <p>온라인으로 간편하게 휴대폰을 개통하세요<br>요금제 선택부터 결제까지 한 번에!</p>
+                <a href="#demo" class="cta-button">🚀 지금 체험하기</a>
+            </section>
+
+            <section id="features" class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>간편한 요금제 선택</h3>
+                    <p>다양한 요금제를 비교하고 나에게 맞는 최적의 플랜을 선택하세요</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>최신 단말기</h3>
+                    <p>iPhone, 갤럭시 등 최신 스마트폰을 할부로 구매할 수 있습니다</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔢</div>
+                    <h3>번호 선택</h3>
+                    <p>원하는 전화번호를 직접 선택하거나 추천 번호를 받아보세요</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3>안전한 결제</h3>
+                    <p>다양한 결제 방법으로 안전하고 편리하게 결제하세요</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>실시간 현황</h3>
+                    <p>신청 현황을 실시간으로 확인하고 개통 진행 상태를 추적하세요</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍💼</div>
+                    <h3>관리자 도구</h3>
+                    <p>강력한 관리자 대시보드로 주문을 효율적으로 관리하세요</p>
+                </div>
+            </section>
+
+            <section id="demo" class="demo-section">
+                <h2>🎭 데모 서비스 체험</h2>
+                <p>실제 서비스와 동일한 기능을 안전하게 체험해보세요<br>
+                <small>※ 데모 모드에서는 실제 결제나 개통이 이루어지지 않습니다</small></p>
+                
+                <div class="demo-buttons">
+                    <a href="https://gitdwsong72.github.io/myzone-mobile-activation" class="demo-button" target="_blank">
+                        🌐 웹 서비스 체험
+                    </a>
+                    <a href="https://github.com/gitdwsong72/myzone-mobile-activation" class="demo-button" target="_blank">
+                        📦 소스코드 보기
+                    </a>
+                    <a href="https://github.com/gitdwsong72/myzone-mobile-activation/actions" class="demo-button" target="_blank">
+                        🔄 CI/CD 상태
+                    </a>
+                </div>
+            </section>
+
+            <section id="status" class="status-section">
+                <h2 style="text-align: center; margin-bottom: 2rem;">📊 프로젝트 상태</h2>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-icon">✅</div>
+                        <div class="status-text">백엔드 API<br>완료</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-icon">✅</div>
+                        <div class="status-text">프론트엔드<br>완료</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-icon">✅</div>
+                        <div class="status-text">데이터베이스<br>완료</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-icon">✅</div>
+                        <div class="status-text">테스트 코드<br>45개</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-icon">🔄</div>
+                        <div class="status-text">CI/CD<br>활성화</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-icon">📱</div>
+                        <div class="status-text">PWA<br>지원</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h2>🛠️ 기술 스택</h2>
+                <p><strong>프론트엔드:</strong> React 18 + TypeScript + Redux Toolkit<br>
+                <strong>백엔드:</strong> FastAPI + PostgreSQL + Redis<br>
+                <strong>배포:</strong> GitHub Pages + Railway + Docker<br>
+                <strong>CI/CD:</strong> GitHub Actions + 자동 테스트</p>
+                
+                <div style="margin-top: 2rem;">
+                    <h3>📈 개발 통계</h3>
+                    <p>총 <strong>300+</strong> 파일 | <strong>15,000+</strong> 라인 코드 | <strong>45개</strong> 테스트</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/gitdwsong72/myzone-mobile-activation" target="_blank">GitHub</a>
+                <a href="https://github.com/gitdwsong72/myzone-mobile-activation/issues" target="_blank">Issues</a>
+                <a href="https://github.com/gitdwsong72/myzone-mobile-activation/actions" target="_blank">Actions</a>
+                <a href="https://gitdwsong72.github.io/myzone-mobile-activation" target="_blank">Live Demo</a>
+            </div>
+            <p>&copy; 2024 MyZone Mobile Activation Service. Built with ❤️</p>
+            <p><small>이 프로젝트는 데모 목적으로 제작되었습니다.</small></p>
+        </div>
+    </footer>
+
+    <script>
+        // 간단한 인터랙션 추가
+        document.addEventListener('DOMContentLoaded', function() {
+            // 스무스 스크롤
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // 서비스 상태 체크
+            const checkServiceStatus = async () => {
+                try {
+                    const response = await fetch('https://gitdwsong72.github.io/myzone-mobile-activation');
+                    if (response.ok) {
+                        console.log('✅ 서비스 정상 작동 중');
+                    }
+                } catch (error) {
+                    console.log('🔄 서비스 배포 중...');
+                }
+            };
+
+            checkServiceStatus();
+
+            // 애니메이션 효과
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 카드들에 애니메이션 적용
+            document.querySelectorAll('.feature-card, .demo-section, .status-section').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
