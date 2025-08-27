@@ -40,7 +40,7 @@ jobs:
         ESLINT_NO_DEV_ERRORS: true
       run: |
         cd frontend
-        npm run build:simple
+        npm run build:minimal
     
     - name: Prepare deployment
       run: |

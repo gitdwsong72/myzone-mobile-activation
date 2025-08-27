@@ -6,13 +6,13 @@
   - 모든 내부 링크가 올바른 경로를 사용하도록 수정
   - _요구사항: 2.2, 2.3_
 
-- [-] 2. GitHub Pages용 빌드 설정 최적화
+- [x] 2. GitHub Pages용 빌드 설정 최적화
   - package.json의 homepage 필드 설정
   - 환경 변수 설정을 위한 .env.production 파일 생성
   - PUBLIC_URL 및 기타 필요한 환경 변수 구성
   - _요구사항: 1.1, 1.3, 5.1_
 
-- [ ] 3. SPA 라우팅 지원을 위한 404.html 생성
+- [x] 3. SPA 라우팅 지원을 위한 404.html 생성
   - GitHub Pages에서 SPA 라우팅을 지원하는 404.html 파일 작성
   - React 앱으로 리다이렉트하는 스크립트 구현
   - 브라우저 새로고침 및 직접 URL 접근 지원
