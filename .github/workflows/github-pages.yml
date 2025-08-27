@@ -5,22 +5,15 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -32,40 +25,42 @@ jobs:
     - name: Install dependencies
       run: |
         cd frontend
-        npm install
+        npm ci
     
-    - name: Build for GitHub Pages
+    - name: Build React App
       env:
         REACT_APP_API_URL: https://myzone-backend-production.up.railway.app/api/v1
-        PUBLIC_URL: /myzone-mobile-activation
+        PUBLIC_URL: /myzone-mobile-activation/app
         GENERATE_SOURCEMAP: false
         REACT_APP_ENVIRONMENT: demo
         REACT_APP_DEMO_MODE: true
-        ESLINT_NO_DEV_ERRORS: true
-        DISABLE_ESLINT_PLUGIN: true
+        CI: false
       run: |
         cd frontend
-        cp .env.demo .env.production
-        # ESLint 설정 임시 비활성화
-        if [ -f .eslintrc.js ]; then mv .eslintrc.js .eslintrc.js.bak; fi
         npm run build
     
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
+    - name: Prepare deployment
+      run: |
+        # 기존 docs 백업
+        if [ -d docs ]; then
+          cp docs/index.html docs/landing.html
+        fi
+        
+        # React 앱을 docs/app에 배치
+        mkdir -p docs/app
+        cp -r frontend/build/* docs/app/
+        
+        # 랜딩 페이지 복원 (있다면)
+        if [ -f docs/landing.html ]; then
+          cp docs/landing.html docs/index.html
+        fi
+        
+        # 404.html을 루트에 배치 (SPA 라우팅 지원)
+        cp frontend/build/404.html docs/404.html
     
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: frontend/build
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    
-    steps:
     - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
+        publish_branch: gh-pages
