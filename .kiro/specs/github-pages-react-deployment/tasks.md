@@ -30,7 +30,7 @@
   - 사용자 경험을 위한 부드러운 전환 효과 추가
   - _요구사항: 3.2_
 
-- [ ] 6. GitHub Actions 워크플로우 개선
+- [-] 6. GitHub Actions 워크플로우 개선
   - 기존 .github/workflows/github-pages.yml 파일 수정
   - 빌드 캐싱 최적화로 배포 시간 단축
   - 오류 처리 및 알림 기능 강화
