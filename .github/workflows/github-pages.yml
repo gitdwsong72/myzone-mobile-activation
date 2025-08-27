@@ -36,10 +36,14 @@ jobs:
     
     - name: Build for GitHub Pages
       env:
-        REACT_APP_API_URL: https://api.myzone.com/api/v1
+        REACT_APP_API_URL: https://myzone-backend-production.up.railway.app/api/v1
         PUBLIC_URL: /myzone-mobile-activation
+        GENERATE_SOURCEMAP: false
+        REACT_APP_ENVIRONMENT: demo
+        REACT_APP_DEMO_MODE: true
       run: |
         cd frontend
+        cp .env.demo .env.production
         npm run build
     
     - name: Setup Pages

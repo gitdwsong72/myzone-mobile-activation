@@ -1,0 +1,42 @@
+name: Deploy Backend to Railway
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'backend/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Install Railway CLI
+      run: |
+        curl -fsSL https://railway.app/install.sh | sh
+        echo "$HOME/.railway/bin" >> $GITHUB_PATH
+    
+    - name: Deploy to Railway
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      run: |
+        cd backend
+        railway login --token $RAILWAY_TOKEN
+        railway up --service backend
+      continue-on-error: true
+    
+    - name: Deploy to Render (fallback)
+      if: failure()
+      env:
+        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+      run: |
+        curl -X POST "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys" \
+          -H "Authorization: Bearer $RENDER_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{"clearCache": false}'
+      continue-on-error: true

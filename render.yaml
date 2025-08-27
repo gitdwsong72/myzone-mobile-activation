@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: myzone-backend
+    env: python
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && python init_demo.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./demo.db
+      - key: ENVIRONMENT
+        value: demo
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "https://gitdwsong72.github.io,https://*.github.io"
+    
+  - type: static
+    name: myzone-frontend
+    buildCommand: "cd frontend && npm install && npm run build"
+    staticPublishPath: frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://myzone-backend.onrender.com/api/v1
+      - key: REACT_APP_DEMO_MODE
+        value: "true"

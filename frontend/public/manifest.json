@@ -1,6 +1,7 @@
 {
   "short_name": "MyZone",
-  "name": "MyZone 핸드폰 개통 서비스",
+  "name": "MyZone 모바일 개통 서비스",
+  "description": "온라인 휴대폰 개통 신청 서비스",
   "icons": [
     {
       "src": "favicon.ico",
@@ -11,5 +12,8 @@
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "categories": ["business", "utilities"],
+  "lang": "ko-KR"
 }
