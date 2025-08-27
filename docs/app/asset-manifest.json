@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/myzone-mobile-activation/app/static/css/main.b1183ad9.css",
-    "main.js": "/myzone-mobile-activation/app/static/js/main.9df7b714.js",
+    "main.css": "/myzone-mobile-activation/app/static/css/main.a24db456.css",
+    "main.js": "/myzone-mobile-activation/app/static/js/main.83acb91f.js",
     "static/css/829.8b02fb10.chunk.css": "/myzone-mobile-activation/app/static/css/829.8b02fb10.chunk.css",
     "static/js/829.2a9e0b3c.chunk.js": "/myzone-mobile-activation/app/static/js/829.2a9e0b3c.chunk.js",
     "static/css/465.c2d61072.chunk.css": "/myzone-mobile-activation/app/static/css/465.c2d61072.chunk.css",
     "static/js/465.0233f8b5.chunk.js": "/myzone-mobile-activation/app/static/js/465.0233f8b5.chunk.js",
-    "static/css/506.c308605c.chunk.css": "/myzone-mobile-activation/app/static/css/506.c308605c.chunk.css",
-    "static/js/506.3da36591.chunk.js": "/myzone-mobile-activation/app/static/js/506.3da36591.chunk.js",
+    "static/css/506.909ca2bf.chunk.css": "/myzone-mobile-activation/app/static/css/506.909ca2bf.chunk.css",
+    "static/js/506.7ac38050.chunk.js": "/myzone-mobile-activation/app/static/js/506.7ac38050.chunk.js",
     "static/css/523.a101bc45.chunk.css": "/myzone-mobile-activation/app/static/css/523.a101bc45.chunk.css",
     "static/js/523.136f70f1.chunk.js": "/myzone-mobile-activation/app/static/js/523.136f70f1.chunk.js",
     "static/css/557.c11d1974.chunk.css": "/myzone-mobile-activation/app/static/css/557.c11d1974.chunk.css",
     "static/js/557.95942386.chunk.js": "/myzone-mobile-activation/app/static/js/557.95942386.chunk.js",
-    "static/css/62.c738dfe9.chunk.css": "/myzone-mobile-activation/app/static/css/62.c738dfe9.chunk.css",
-    "static/js/62.ff722faf.chunk.js": "/myzone-mobile-activation/app/static/js/62.ff722faf.chunk.js",
-    "static/css/80.7c99dd95.chunk.css": "/myzone-mobile-activation/app/static/css/80.7c99dd95.chunk.css",
-    "static/js/80.dcbd08a2.chunk.js": "/myzone-mobile-activation/app/static/js/80.dcbd08a2.chunk.js",
+    "static/css/62.b9d5502f.chunk.css": "/myzone-mobile-activation/app/static/css/62.b9d5502f.chunk.css",
+    "static/js/62.bd202bdb.chunk.js": "/myzone-mobile-activation/app/static/js/62.bd202bdb.chunk.js",
+    "static/css/80.d1d12b5a.chunk.css": "/myzone-mobile-activation/app/static/css/80.d1d12b5a.chunk.css",
+    "static/js/80.a6d127af.chunk.js": "/myzone-mobile-activation/app/static/js/80.a6d127af.chunk.js",
     "static/css/266.b1678be5.chunk.css": "/myzone-mobile-activation/app/static/css/266.b1678be5.chunk.css",
     "static/js/266.0bd8a384.chunk.js": "/myzone-mobile-activation/app/static/js/266.0bd8a384.chunk.js",
     "static/css/363.3e09938b.chunk.css": "/myzone-mobile-activation/app/static/css/363.3e09938b.chunk.css",
@@ -36,7 +36,7 @@
     "index.html": "/myzone-mobile-activation/app/index.html"
   },
   "entrypoints": [
-    "static/css/main.b1183ad9.css",
-    "static/js/main.9df7b714.js"
+    "static/css/main.a24db456.css",
+    "static/js/main.83acb91f.js"
   ]
 }
