@@ -1,0 +1,14 @@
+# Netlify redirects
+/*    /index.html   200
+
+# SPA routing
+/plans    /index.html   200
+/user-info    /index.html   200
+/devices    /index.html   200
+/numbers    /index.html   200
+/order-summary    /index.html   200
+/payment    /index.html   200
+/payment-complete    /index.html   200
+/order-status    /index.html   200
+/support    /index.html   200
+/admin/*    /index.html   200
