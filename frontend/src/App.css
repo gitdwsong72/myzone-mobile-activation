@@ -540,8 +540,8 @@
   color: var(--text-secondary);
   margin: 0;
 }
-/* 버
-튼 컴포넌트 스타일 */
+
+/* 버튼 컴포넌트 스타일 */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -1393,8 +1393,7 @@
   color: #0c5460;
   border-left: 4px solid var(--info-color);
 }
-/*
- 페이지 로더 스타일 */
+/* 페이지 로더 스타일 */
 .page-loader {
   display: flex;
   flex-direction: column;

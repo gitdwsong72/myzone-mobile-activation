@@ -1,12 +1,12 @@
 # 구현 계획
 
-- [ ] 1. React 앱 라우팅 설정 수정
+- [x] 1. React 앱 라우팅 설정 수정
   - React Router의 basename을 GitHub Pages 서브패스에 맞게 설정
   - BrowserRouter에 `/myzone-mobile-activation/app` basename 적용
   - 모든 내부 링크가 올바른 경로를 사용하도록 수정
   - _요구사항: 2.2, 2.3_
 
-- [ ] 2. GitHub Pages용 빌드 설정 최적화
+- [-] 2. GitHub Pages용 빌드 설정 최적화
   - package.json의 homepage 필드 설정
   - 환경 변수 설정을 위한 .env.production 파일 생성
   - PUBLIC_URL 및 기타 필요한 환경 변수 구성
