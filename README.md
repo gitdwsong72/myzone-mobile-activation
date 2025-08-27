@@ -1,5 +1,16 @@
 # MyZone 핸드폰 개통 서비스
 
+[![CI/CD Pipeline](https://github.com/YOUR_USERNAME/myzone-mobile-activation/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/YOUR_USERNAME/myzone-mobile-activation/actions/workflows/ci-cd.yml)
+[![Test Suite](https://github.com/YOUR_USERNAME/myzone-mobile-activation/actions/workflows/test.yml/badge.svg)](https://github.com/YOUR_USERNAME/myzone-mobile-activation/actions/workflows/test.yml)
+[![GitHub Pages](https://github.com/YOUR_USERNAME/myzone-mobile-activation/actions/workflows/github-pages.yml/badge.svg)](https://github.com/YOUR_USERNAME/myzone-mobile-activation/actions/workflows/github-pages.yml)
+[![Docker Hub](https://github.com/YOUR_USERNAME/myzone-mobile-activation/actions/workflows/docker-hub.yml/badge.svg)](https://github.com/YOUR_USERNAME/myzone-mobile-activation/actions/workflows/docker-hub.yml)
+[![codecov](https://codecov.io/gh/YOUR_USERNAME/myzone-mobile-activation/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/myzone-mobile-activation)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![React 18](https://img.shields.io/badge/react-18-blue.svg)](https://reactjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green.svg)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
+
 MyZone은 고객이 온라인으로 휴대폰 개통 신청을 할 수 있는 통합 플랫폼입니다.
 
 ## 기술 스택
@@ -394,6 +405,45 @@ chore: 빌드 프로세스 또는 보조 도구 변경
 3. 성능 영향 평가
 4. 테스트 커버리지 확인
 5. 문서화 상태 점검
+
+## 🚀 GitHub 배포
+
+### 빠른 배포
+```bash
+# 자동 배포 스크립트 실행
+./deploy-to-github.sh -u YOUR_GITHUB_USERNAME
+
+# 또는 수동 배포
+git init
+git add .
+git commit -m "feat: MyZone 모바일 개통 서비스 초기 구현"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/myzone-mobile-activation.git
+git push -u origin main
+```
+
+### GitHub Pages 배포
+프론트엔드는 GitHub Pages를 통해 자동으로 배포됩니다:
+- **URL**: https://YOUR_USERNAME.github.io/myzone-mobile-activation
+- **자동 배포**: main 브랜치에 push 시 자동 빌드 및 배포
+
+### Docker Hub 배포
+Docker 이미지는 자동으로 빌드되어 Docker Hub에 배포됩니다:
+```bash
+# 이미지 사용
+docker pull myzone-backend:latest
+docker pull myzone-frontend:latest
+```
+
+### CI/CD 파이프라인
+- ✅ 코드 품질 검사 (ESLint, Black, Flake8)
+- ✅ 보안 스캔 (Trivy, CodeQL, Bandit)
+- ✅ 단위 테스트 (pytest, Jest)
+- ✅ E2E 테스트 (Playwright)
+- ✅ Docker 이미지 빌드
+- ✅ 자동 배포 (스테이징/프로덕션)
+
+자세한 배포 가이드는 [GITHUB_DEPLOYMENT_GUIDE.md](GITHUB_DEPLOYMENT_GUIDE.md)를 참고하세요.
 
 ## 라이선스
 
