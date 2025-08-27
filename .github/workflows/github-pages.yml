@@ -123,16 +123,23 @@ jobs:
         echo "📁 Final structure:"
         find docs -type f -name "*.html" | head -10
     
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs
-        publish_branch: main
-        destination_dir: docs
-        commit_message: '🚀 Deploy: ${{ github.event.head_commit.message }}'
-        user_name: 'github-actions[bot]'
-        user_email: 'github-actions[bot]@users.noreply.github.com'
+    - name: Commit and push to docs
+      run: |
+        echo "📝 Committing deployment files..."
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # docs 폴더 변경사항 추가
+        git add docs/
+        
+        # 변경사항이 있는지 확인
+        if git diff --staged --quiet; then
+          echo "📄 No changes to deploy"
+        else
+          git commit -m "🚀 Deploy: $(date '+%Y-%m-%d %H:%M:%S')"
+          git push origin main
+          echo "✅ Deployment committed and pushed"
+        fi
     
     - name: Verify deployment
       run: |
