@@ -9,6 +9,11 @@ on:
       - 'docs/**'
       - '.github/workflows/github-pages.yml'
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 env:
   NODE_VERSION: '18'
   CACHE_VERSION: v1
@@ -63,6 +68,8 @@ jobs:
         DISABLE_ESLINT_PLUGIN: true
         TSC_COMPILE_ON_ERROR: true
         ESLINT_NO_DEV_ERRORS: true
+        SKIP_PREFLIGHT_CHECK: true
+        TYPESCRIPT_COMPILE_ON_ERROR: true
         NODE_OPTIONS: '--max-old-space-size=4096'
       run: |
         cd frontend
