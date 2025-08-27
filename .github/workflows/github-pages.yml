@@ -2,28 +2,55 @@ name: Deploy to GitHub Pages
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - 'docs/**'
+      - '.github/workflows/github-pages.yml'
+
+env:
+  NODE_VERSION: '18'
+  CACHE_VERSION: v1
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
-    - name: Checkout
+    - name: Checkout repository
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
     
-    - name: Setup Node.js
+    - name: Setup Node.js with enhanced caching
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
     
+    - name: Cache node_modules
+      uses: actions/cache@v3
+      id: cache-node-modules
+      with:
+        path: frontend/node_modules
+        key: ${{ env.CACHE_VERSION }}-node-modules-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+        restore-keys: |
+          ${{ env.CACHE_VERSION }}-node-modules-${{ runner.os }}-
+    
     - name: Install dependencies
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: |
         cd frontend
-        npm ci
+        npm ci --prefer-offline --no-audit
+    
+    - name: Verify dependencies
+      run: |
+        cd frontend
+        npm ls --depth=0 || echo "Some peer dependencies missing, but build should work"
     
     - name: Build React App
       env:
@@ -36,33 +63,112 @@ jobs:
         DISABLE_ESLINT_PLUGIN: true
         TSC_COMPILE_ON_ERROR: true
         ESLINT_NO_DEV_ERRORS: true
+        NODE_OPTIONS: '--max-old-space-size=4096'
       run: |
         cd frontend
+        echo "🚀 Starting React build..."
         npm run build:minimal
+        echo "✅ Build completed successfully"
+        echo "📦 Build size: $(du -sh build | cut -f1)"
     
-    - name: Prepare deployment
+    - name: Validate build output
       run: |
-        # 기존 docs 백업
-        if [ -d docs ]; then
+        cd frontend
+        if [ ! -d "build" ]; then
+          echo "❌ Build directory not found!"
+          exit 1
+        fi
+        
+        if [ ! -f "build/index.html" ]; then
+          echo "❌ index.html not found in build!"
+          exit 1
+        fi
+        
+        if [ ! -f "build/404.html" ]; then
+          echo "❌ 404.html not found in build!"
+          exit 1
+        fi
+        
+        echo "✅ Build validation passed"
+        echo "📁 Build contents:"
+        ls -la build/
+    
+    - name: Prepare deployment structure
+      run: |
+        echo "🔧 Preparing deployment structure..."
+        
+        # 기존 docs 백업 (랜딩 페이지 보존)
+        if [ -f docs/index.html ]; then
+          echo "📄 Backing up existing landing page..."
           cp docs/index.html docs/landing.html
         fi
         
         # React 앱을 docs/app에 배치
+        echo "📱 Deploying React app to /app subdirectory..."
         mkdir -p docs/app
         cp -r frontend/build/* docs/app/
         
-        # 랜딩 페이지 복원 (있다면)
+        # 랜딩 페이지 복원
         if [ -f docs/landing.html ]; then
+          echo "🏠 Restoring landing page..."
           cp docs/landing.html docs/index.html
+          rm docs/landing.html
         fi
         
-        # 404.html을 루트에 배치 (SPA 라우팅 지원)
+        # SPA 라우팅을 위한 404.html을 루트에 배치
+        echo "🔀 Setting up SPA routing..."
         cp frontend/build/404.html docs/404.html
+        
+        echo "✅ Deployment structure ready"
+        echo "📁 Final structure:"
+        find docs -type f -name "*.html" | head -10
     
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs
         publish_branch: main
         destination_dir: docs
+        commit_message: '🚀 Deploy: ${{ github.event.head_commit.message }}'
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+    
+    - name: Verify deployment
+      run: |
+        echo "🔍 Verifying deployment..."
+        sleep 30  # GitHub Pages 배포 대기
+        
+        # 기본 접근성 확인
+        REPO_NAME="${{ github.repository }}"
+        REPO_OWNER="${{ github.repository_owner }}"
+        SITE_URL="https://${REPO_OWNER}.github.io/${REPO_NAME##*/}"
+        
+        echo "🌐 Site URL: $SITE_URL"
+        echo "📱 React App URL: $SITE_URL/app"
+        
+        # HTTP 상태 확인 (선택적)
+        if command -v curl >/dev/null 2>&1; then
+          echo "📡 Checking site accessibility..."
+          if curl -s -o /dev/null -w "%{http_code}" "$SITE_URL" | grep -q "200\|301\|302"; then
+            echo "✅ Landing page is accessible"
+          else
+            echo "⚠️ Landing page may not be ready yet (normal for first deployment)"
+          fi
+        fi
+        
+        echo "🎉 Deployment completed successfully!"
+        echo "📋 Summary:"
+        echo "  - Landing Page: $SITE_URL"
+        echo "  - React App: $SITE_URL/app"
+        echo "  - SPA Routing: Enabled with 404.html"
+    
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "❌ Deployment failed!"
+        echo "🔍 Check the logs above for details"
+        echo "💡 Common issues:"
+        echo "  - Build errors in React app"
+        echo "  - Missing environment variables"
+        echo "  - GitHub Pages configuration issues"

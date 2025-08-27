@@ -1,0 +1,71 @@
+{
+  "deployment": {
+    "name": "MyZone Mobile Activation",
+    "description": "React 앱과 랜딩 페이지를 포함한 하이브리드 GitHub Pages 배포",
+    "urls": {
+      "landing": "https://{{github_user}}.github.io/{{repo_name}}",
+      "app": "https://{{github_user}}.github.io/{{repo_name}}/app"
+    },
+    "healthCheck": {
+      "enabled": true,
+      "timeout": 30,
+      "retries": 3,
+      "endpoints": [
+        {
+          "name": "Landing Page",
+          "path": "/",
+          "expectedStatus": [200, 301, 302]
+        },
+        {
+          "name": "React App",
+          "path": "/app",
+          "expectedStatus": [200]
+        },
+        {
+          "name": "SPA Routing",
+          "path": "/app/some-route",
+          "expectedStatus": [200],
+          "description": "Tests 404.html redirect functionality"
+        }
+      ]
+    },
+    "performance": {
+      "budgets": {
+        "maxBuildTime": "5m",
+        "maxBundleSize": "2MB",
+        "maxDeployTime": "3m"
+      },
+      "monitoring": {
+        "buildSize": true,
+        "deployTime": true,
+        "cacheHitRate": true
+      }
+    },
+    "notifications": {
+      "onSuccess": {
+        "enabled": true,
+        "message": "🎉 배포 성공! 사이트가 업데이트되었습니다."
+      },
+      "onFailure": {
+        "enabled": true,
+        "message": "❌ 배포 실패! 로그를 확인해주세요."
+      }
+    }
+  },
+  "cache": {
+    "strategy": "aggressive",
+    "nodeModules": {
+      "enabled": true,
+      "key": "v1-node-modules-{{runner_os}}-{{package_lock_hash}}"
+    },
+    "buildOutput": {
+      "enabled": false,
+      "description": "빌드 출력은 환경에 따라 달라질 수 있어 캐시하지 않음"
+    }
+  },
+  "security": {
+    "dependencyScanning": true,
+    "secretScanning": true,
+    "codeScanning": false
+  }
+}

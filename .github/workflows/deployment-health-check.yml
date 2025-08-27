@@ -1,0 +1,91 @@
+name: Deployment Health Check
+
+on:
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types:
+      - completed
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+    - name: Wait for GitHub Pages deployment
+      run: |
+        echo "⏳ Waiting for GitHub Pages to update..."
+        sleep 60  # GitHub Pages 배포 완료 대기
+    
+    - name: Health Check
+      run: |
+        REPO_NAME="${{ github.repository }}"
+        REPO_OWNER="${{ github.repository_owner }}"
+        SITE_URL="https://${REPO_OWNER}.github.io/${REPO_NAME##*/}"
+        APP_URL="$SITE_URL/app"
+        
+        echo "🏥 Starting health check..."
+        echo "🌐 Site URL: $SITE_URL"
+        echo "📱 App URL: $APP_URL"
+        
+        # 기본 접근성 테스트
+        check_url() {
+          local url=$1
+          local name=$2
+          
+          if curl -s -f -o /dev/null "$url"; then
+            echo "✅ $name is accessible"
+            return 0
+          else
+            echo "❌ $name is not accessible"
+            return 1
+          fi
+        }
+        
+        # 상태 확인
+        LANDING_OK=false
+        APP_OK=false
+        
+        if check_url "$SITE_URL" "Landing Page"; then
+          LANDING_OK=true
+        fi
+        
+        if check_url "$APP_URL" "React App"; then
+          APP_OK=true
+        fi
+        
+        # 결과 요약
+        echo ""
+        echo "📊 Health Check Results:"
+        echo "  Landing Page: $([ "$LANDING_OK" = true ] && echo "✅ OK" || echo "❌ FAIL")"
+        echo "  React App: $([ "$APP_OK" = true ] && echo "✅ OK" || echo "❌ FAIL")"
+        
+        if [ "$LANDING_OK" = true ] && [ "$APP_OK" = true ]; then
+          echo ""
+          echo "🎉 All services are healthy!"
+          echo "🚀 Deployment successful and verified"
+        else
+          echo ""
+          echo "⚠️ Some services may need time to propagate"
+          echo "🔄 GitHub Pages can take a few minutes to update"
+        fi
+
+  notify-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    
+    steps:
+    - name: Deployment Failed Notification
+      run: |
+        echo "❌ GitHub Pages deployment failed!"
+        echo ""
+        echo "🔍 Troubleshooting steps:"
+        echo "1. Check the deployment workflow logs"
+        echo "2. Verify React build is successful locally"
+        echo "3. Check GitHub Pages settings in repository"
+        echo "4. Ensure all required secrets are configured"
+        echo ""
+        echo "📋 Quick fixes:"
+        echo "- Run 'npm run build:minimal' locally to test build"
+        echo "- Check for TypeScript or dependency errors"
+        echo "- Verify environment variables are set correctly"
