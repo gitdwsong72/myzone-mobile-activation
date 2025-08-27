@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/myzone-mobile-activation/app/static/css/main.88f7fa55.css",
-    "main.js": "/myzone-mobile-activation/app/static/js/main.b23e34f1.js",
+    "main.js": "/myzone-mobile-activation/app/static/js/main.568b9c90.js",
     "static/css/829.8b02fb10.chunk.css": "/myzone-mobile-activation/app/static/css/829.8b02fb10.chunk.css",
     "static/js/829.2a9e0b3c.chunk.js": "/myzone-mobile-activation/app/static/js/829.2a9e0b3c.chunk.js",
     "static/css/465.c2d61072.chunk.css": "/myzone-mobile-activation/app/static/css/465.c2d61072.chunk.css",
@@ -37,6 +37,6 @@
   },
   "entrypoints": [
     "static/css/main.88f7fa55.css",
-    "static/js/main.b23e34f1.js"
+    "static/js/main.568b9c90.js"
   ]
 }
