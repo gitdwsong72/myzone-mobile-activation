@@ -422,10 +422,43 @@ git remote add origin https://github.com/YOUR_USERNAME/myzone-mobile-activation.
 git push -u origin main
 ```
 
+### 🎯 서비스 체험하기
+배포된 서비스를 바로 체험해보세요:
+
+1. **프로젝트 소개**: 랜딩 페이지에서 프로젝트 개요 확인
+2. **데모 체험**: "체험하기" 버튼을 클릭하여 React 앱 실행
+3. **전체 기능**: 요금제 선택부터 주문 완료까지 전 과정 체험
+4. **안전한 테스트**: 데모 모드로 실제 결제 없이 안전하게 테스트
+
+> ⚠️ **데모 모드 안내**: 현재 서비스는 데모 버전으로, 실제 결제나 개통이 이루어지지 않습니다.
+
 ### GitHub Pages 배포
 프론트엔드는 GitHub Pages를 통해 자동으로 배포됩니다:
-- **URL**: https://YOUR_USERNAME.github.io/myzone-mobile-activation
+
+#### 🌐 라이브 데모
+- **랜딩 페이지**: https://YOUR_USERNAME.github.io/myzone-mobile-activation
+- **React 앱**: https://YOUR_USERNAME.github.io/myzone-mobile-activation/app
 - **자동 배포**: main 브랜치에 push 시 자동 빌드 및 배포
+
+#### 📱 데모 모드 기능
+- API 연결 실패 시 자동으로 목업 데이터 사용
+- 실제 결제나 주문 시도 시 데모 모드 경고 표시
+- 모든 기능을 안전하게 체험 가능
+
+#### 🔧 배포 구조
+```
+GitHub Pages 사이트
+├── / (루트) - 정적 HTML 랜딩 페이지
+├── /app/* - React SPA 앱 (데모 모드)
+└── /assets/ - 공통 리소스
+```
+
+#### ⚡ 자동 배포 프로세스
+1. main 브랜치에 코드 push
+2. GitHub Actions가 자동으로 트리거
+3. React 앱 빌드 및 최적화
+4. GitHub Pages에 자동 배포
+5. 배포 완료 알림
 
 ### Docker Hub 배포
 Docker 이미지는 자동으로 빌드되어 Docker Hub에 배포됩니다:
@@ -443,7 +476,10 @@ docker pull myzone-frontend:latest
 - ✅ Docker 이미지 빌드
 - ✅ 자동 배포 (스테이징/프로덕션)
 
-자세한 배포 가이드는 [GITHUB_DEPLOYMENT_GUIDE.md](GITHUB_DEPLOYMENT_GUIDE.md)를 참고하세요.
+### 📚 관련 문서
+- **사용자 가이드**: [USER_GUIDE.md](USER_GUIDE.md) - 서비스 이용 방법
+- **개발자 배포 가이드**: [DEVELOPER_DEPLOYMENT_GUIDE.md](DEVELOPER_DEPLOYMENT_GUIDE.md) - GitHub Pages 배포 상세 가이드
+- **GitHub 배포 가이드**: [GITHUB_DEPLOYMENT_GUIDE.md](GITHUB_DEPLOYMENT_GUIDE.md) - 전체 프로젝트 배포 가이드
 
 ## 라이선스
 

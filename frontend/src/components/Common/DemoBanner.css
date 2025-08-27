@@ -44,6 +44,7 @@
   flex-shrink: 0;
 }
 
+.demo-banner-performance,
 .demo-banner-toggle,
 .demo-banner-close {
   background: rgba(255, 255, 255, 0.2);
@@ -60,9 +61,18 @@
   font-size: 14px;
 }
 
+.demo-banner-performance:hover,
 .demo-banner-toggle:hover,
 .demo-banner-close:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+.demo-banner-performance {
+  font-size: 16px;
+}
+
+.demo-banner-performance:hover {
+  background: rgba(0, 123, 255, 0.3);
 }
 
 .demo-banner-details {
@@ -131,11 +141,16 @@
     font-size: 13px;
   }
   
+  .demo-banner-performance,
   .demo-banner-toggle,
   .demo-banner-close {
     width: 28px;
     height: 28px;
     font-size: 12px;
+  }
+  
+  .demo-banner-performance {
+    font-size: 14px;
   }
   
   .demo-banner-details {
@@ -150,6 +165,7 @@
     border: 2px solid #fff;
   }
   
+  .demo-banner-performance,
   .demo-banner-toggle,
   .demo-banner-close {
     background: rgba(255, 255, 255, 0.4);

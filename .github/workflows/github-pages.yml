@@ -148,6 +148,42 @@ jobs:
           echo "✅ Deployment committed and pushed"
         fi
     
+    - name: Analyze bundle size and performance
+      run: |
+        cd frontend
+        echo "📦 Analyzing bundle size and performance..."
+        
+        # 성능 분석 스크립트 실행
+        npm run analyze:performance || echo "Performance analysis completed with warnings"
+        
+        # 기본 크기 분석 (백업용)
+        BUILD_SIZE=$(du -sh build | cut -f1)
+        JS_SIZE=$(du -sh build/static/js 2>/dev/null | cut -f1 || echo "0")
+        CSS_SIZE=$(du -sh build/static/css 2>/dev/null | cut -f1 || echo "0")
+        
+        echo "📊 Quick Bundle Analysis:"
+        echo "  - Total build size: $BUILD_SIZE"
+        echo "  - JavaScript size: $JS_SIZE"
+        echo "  - CSS size: $CSS_SIZE"
+        
+        # 성능 분석 결과 확인
+        if [ -f "build/performance-analysis.json" ]; then
+          echo "✅ Performance analysis report generated"
+          
+          # JSON에서 점수 추출 (jq가 있는 경우)
+          if command -v jq >/dev/null 2>&1; then
+            SCORE=$(jq -r '.score' build/performance-analysis.json)
+            GRADE=$(jq -r '.grade' build/performance-analysis.json)
+            echo "🏆 Performance Score: $SCORE/100 (Grade: $GRADE)"
+          fi
+        else
+          echo "⚠️ Performance analysis report not found"
+        fi
+        
+        # 큰 파일 식별
+        echo "📋 Largest files:"
+        find build -type f -name "*.js" -o -name "*.css" | xargs ls -lh | sort -k5 -hr | head -5
+
     - name: Verify deployment
       run: |
         echo "🔍 Verifying deployment..."
@@ -161,28 +197,185 @@ jobs:
         echo "🌐 Site URL: $SITE_URL"
         echo "📱 React App URL: $SITE_URL/app"
         
-        # HTTP 상태 확인 (선택적)
+        # HTTP 상태 확인
         if command -v curl >/dev/null 2>&1; then
           echo "📡 Checking site accessibility..."
-          if curl -s -o /dev/null -w "%{http_code}" "$SITE_URL" | grep -q "200\|301\|302"; then
-            echo "✅ Landing page is accessible"
+          
+          # 랜딩 페이지 확인
+          LANDING_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL" || echo "000")
+          if [ "$LANDING_STATUS" = "200" ]; then
+            echo "✅ Landing page is accessible (HTTP $LANDING_STATUS)"
           else
-            echo "⚠️ Landing page may not be ready yet (normal for first deployment)"
+            echo "⚠️ Landing page returned HTTP $LANDING_STATUS"
           fi
+          
+          # React 앱 확인
+          APP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL/app" || echo "000")
+          if [ "$APP_STATUS" = "200" ]; then
+            echo "✅ React app is accessible (HTTP $APP_STATUS)"
+          else
+            echo "⚠️ React app returned HTTP $APP_STATUS"
+          fi
+          
+          # 성능 측정
+          echo "⏱️ Performance check:"
+          RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" "$SITE_URL" || echo "0")
+          echo "  - Landing page response time: ${RESPONSE_TIME}s"
+          
+          APP_RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" "$SITE_URL/app" || echo "0")
+          echo "  - React app response time: ${APP_RESPONSE_TIME}s"
         fi
         
         echo "🎉 Deployment completed successfully!"
         echo "📋 Summary:"
-        echo "  - Landing Page: $SITE_URL"
-        echo "  - React App: $SITE_URL/app"
+        echo "  - Landing Page: $SITE_URL (HTTP $LANDING_STATUS)"
+        echo "  - React App: $SITE_URL/app (HTTP $APP_STATUS)"
         echo "  - SPA Routing: Enabled with 404.html"
+
+    - name: Create deployment report
+      run: |
+        echo "📝 Creating deployment report..."
+        
+        REPO_NAME="${{ github.repository }}"
+        REPO_OWNER="${{ github.repository_owner }}"
+        SITE_URL="https://${REPO_OWNER}.github.io/${REPO_NAME##*/}"
+        TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S UTC')
+        COMMIT_SHA="${{ github.sha }}"
+        
+        # 빌드 정보 수집
+        cd frontend
+        BUILD_SIZE=$(du -sh build | cut -f1)
+        JS_COUNT=$(find build/static/js -name "*.js" 2>/dev/null | wc -l || echo "0")
+        CSS_COUNT=$(find build/static/css -name "*.css" 2>/dev/null | wc -l || echo "0")
+        
+        # 리포트 생성
+        cat > ../docs/deployment-status.html << EOF
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>배포 상태 - MyZone</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 40px; }
+                .status { padding: 20px; border-radius: 8px; margin: 20px 0; }
+                .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+                .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+                .metric { display: inline-block; margin: 10px 20px 10px 0; }
+                .metric strong { display: block; font-size: 1.2em; }
+            </style>
+        </head>
+        <body>
+            <h1>🚀 MyZone 배포 상태</h1>
+            
+            <div class="status success">
+                <h2>✅ 배포 성공</h2>
+                <p><strong>배포 시간:</strong> $TIMESTAMP</p>
+                <p><strong>커밋:</strong> $COMMIT_SHA</p>
+                <p><strong>워크플로우:</strong> ${{ github.workflow }}</p>
+            </div>
+            
+            <div class="status info">
+                <h2>📊 빌드 정보</h2>
+                <div class="metric">
+                    <strong>$BUILD_SIZE</strong>
+                    <span>총 빌드 크기</span>
+                </div>
+                <div class="metric">
+                    <strong>$JS_COUNT</strong>
+                    <span>JavaScript 파일</span>
+                </div>
+                <div class="metric">
+                    <strong>$CSS_COUNT</strong>
+                    <span>CSS 파일</span>
+                </div>
+            </div>
+            
+            <div class="status info">
+                <h2>🔗 접속 링크</h2>
+                <p><a href="$SITE_URL" target="_blank">🏠 랜딩 페이지</a></p>
+                <p><a href="$SITE_URL/app" target="_blank">📱 React 앱</a></p>
+            </div>
+            
+            <div class="status info">
+                <h2>📈 성능 모니터링</h2>
+                <p>배포된 앱에서 성능 데이터를 확인하려면 브라우저 개발자 도구의 콘솔을 확인하세요.</p>
+                <p>번들 분석을 위해 <code>npm run analyze</code> 명령을 사용할 수 있습니다.</p>
+            </div>
+        </body>
+        </html>
+        EOF
+        
+        echo "✅ Deployment report created at docs/deployment-status.html"
     
-    - name: Notify on failure
+    - name: Create failure report
       if: failure()
       run: |
         echo "❌ Deployment failed!"
+        
+        TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S UTC')
+        COMMIT_SHA="${{ github.sha }}"
+        
+        # 실패 리포트 생성
+        mkdir -p docs
+        cat > docs/deployment-status.html << EOF
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>배포 실패 - MyZone</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 40px; }
+                .status { padding: 20px; border-radius: 8px; margin: 20px 0; }
+                .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+                .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+            </style>
+        </head>
+        <body>
+            <h1>❌ MyZone 배포 실패</h1>
+            
+            <div class="status error">
+                <h2>배포 실패</h2>
+                <p><strong>실패 시간:</strong> $TIMESTAMP</p>
+                <p><strong>커밋:</strong> $COMMIT_SHA</p>
+                <p><strong>워크플로우:</strong> ${{ github.workflow }}</p>
+            </div>
+            
+            <div class="status info">
+                <h2>🔍 문제 해결 가이드</h2>
+                <ul>
+                    <li>GitHub Actions 로그에서 상세한 오류 메시지 확인</li>
+                    <li>React 앱 빌드 오류 확인</li>
+                    <li>환경 변수 설정 확인</li>
+                    <li>GitHub Pages 설정 확인</li>
+                    <li>의존성 버전 충돌 확인</li>
+                </ul>
+            </div>
+            
+            <div class="status info">
+                <h2>📞 지원</h2>
+                <p>문제가 지속되면 GitHub Issues에서 도움을 요청하세요.</p>
+            </div>
+        </body>
+        </html>
+        EOF
+        
+        echo "📝 Failure report created"
         echo "🔍 Check the logs above for details"
         echo "💡 Common issues:"
         echo "  - Build errors in React app"
-        echo "  - Missing environment variables"
+        echo "  - Missing environment variables"  
         echo "  - GitHub Pages configuration issues"
+        echo "  - Node.js memory issues"
+        echo "  - Dependency conflicts"
+
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "🚨 Deployment monitoring alert:"
+        echo "  - Status: FAILED"
+        echo "  - Time: $(date '+%Y-%m-%d %H:%M:%S UTC')"
+        echo "  - Commit: ${{ github.sha }}"
+        echo "  - Branch: ${{ github.ref_name }}"
+        echo "  - Actor: ${{ github.actor }}"

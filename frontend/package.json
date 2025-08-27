@@ -2,7 +2,7 @@
   "name": "myzone-frontend",
   "version": "1.0.0",
   "description": "MyZone 핸드폰 개통 서비스 프론트엔드",
-  "homepage": "/myzone-mobile-activation",
+  "homepage": "/myzone-mobile-activation/app",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.7",
@@ -25,13 +25,20 @@
   "devDependencies": {
     "@craco/craco": "^7.1.0",
     "cross-env": "^10.0.0",
-    "jest-junit": "^16.0.0"
+    "jest-junit": "^16.0.0",
+    "webpack-bundle-analyzer": "^4.10.1",
+    "source-map-explorer": "^2.5.3"
   },
   "scripts": {
     "start": "craco start",
     "build": "GENERATE_SOURCEMAP=false craco build",
     "build:simple": "cross-env GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false craco build",
     "build:minimal": "cross-env CI=false GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true craco build",
+    "build:analyze": "cross-env GENERATE_SOURCEMAP=true craco build && npm run analyze",
+    "analyze": "npx webpack-bundle-analyzer build/static/js/*.js",
+    "analyze:source-map": "npx source-map-explorer 'build/static/js/*.js'",
+    "analyze:performance": "node scripts/analyze-performance.js",
+    "build:performance": "npm run build:minimal && npm run analyze:performance",
     "test": "craco test",
     "test:ci": "craco test --coverage --watchAll=false --testResultsProcessor=jest-junit",
     "test:coverage": "craco test --coverage --watchAll=false",

@@ -8,6 +8,7 @@ import { store } from './store/store';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './utils/serviceWorker';
 import { performanceMonitor } from './utils/performance';
+import { performanceMonitoring } from './utils/performanceMonitoring';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -44,7 +45,13 @@ if (process.env.NODE_ENV === 'development') {
   // 개발 환경에서 성능 리포트 출력
   setTimeout(() => {
     console.log(performanceMonitor.generateReport());
+    performanceMonitoring.startMonitoring();
   }, 5000);
+} else if (process.env.REACT_APP_DEMO_MODE === 'true') {
+  // 데모 모드에서도 모니터링 활성화
+  setTimeout(() => {
+    performanceMonitoring.startMonitoring();
+  }, 2000);
 }
 
 reportWebVitals();

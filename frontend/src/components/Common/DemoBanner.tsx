@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { isDemoMode, DEMO_CONFIG } from '../../config/demo';
+import PerformanceDashboard from './PerformanceDashboard';
 import './DemoBanner.css';
 
 interface DemoBannerProps {
@@ -13,6 +14,7 @@ const DemoBanner: React.FC<DemoBannerProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
 
   // 데모 모드가 아니면 렌더링하지 않음
   if (!isDemoMode() || isDismissed) {
@@ -42,6 +44,14 @@ const DemoBanner: React.FC<DemoBannerProps> = ({
           </div>
         </div>
         <div className="demo-banner-actions">
+          <button 
+            className="demo-banner-performance"
+            onClick={() => setShowPerformanceDashboard(true)}
+            aria-label="성능 대시보드 열기"
+            title="성능 모니터링 대시보드"
+          >
+            📊
+          </button>
           {showDetails && (
             <button 
               className="demo-banner-toggle"
@@ -74,6 +84,12 @@ const DemoBanner: React.FC<DemoBannerProps> = ({
           </div>
         </div>
       )}
+      
+      {/* 성능 대시보드 */}
+      <PerformanceDashboard 
+        isVisible={showPerformanceDashboard}
+        onClose={() => setShowPerformanceDashboard(false)}
+      />
     </div>
   );
 };
